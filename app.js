@@ -3,6 +3,8 @@ const app = express();
 const fs = require('fs')
 const serv = require('http').Server(app);
 
+const sql = require('sqlite3');
+
 const PORT = 3000;
 const userDataPath = __dirname+'/user-data.json'
 const allowedPfpFileExts = ['jpg','png','webp','jfif'];
@@ -12,6 +14,7 @@ app.use('/', express.static(__dirname + '/'));
 app.use(express.urlencoded({ extended: true }));
 serv.listen(PORT);
 
+let db = new sql.Database('db/users.db');
 let users;
 
 fs.readFile(userDataPath, (err, data) => {
@@ -82,7 +85,7 @@ function userValid(userData){
     return error;
 }
 
-const io = require('socket.io')(serv)
+const io = require('socket.io')(serv);
 io.on('connection', function(socket){
     let ip = socket.handshake.address
 
