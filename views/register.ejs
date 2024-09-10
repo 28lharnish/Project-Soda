@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    <h1>REGISTER</h1>
+    <form action="/register" method="post">
+        <input type="text" id="usernameBox" name="username">
+        <input type="file" id="pfpBox" name="pfpPath">
+        <button type="submit">GO</button>
+    </form>
+    <% if(typeof previousAttempt !== 'undefined') { %>
+        <%= previousAttempt %>
+    <% } %>
+    <script src="/socket.io/socket.io.min.js"></script>
+    <script src="/public/js/register.js"></script>
+</body>
+</html>
