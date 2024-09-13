@@ -16,7 +16,7 @@ const maxUsernameLength = 20;
 const minPasswordLength = 3;
 const maxPasswordLength = 20;
 
-const allowedPfpFileFormats = ['jpg', 'png', 'webp', 'jfif'];
+const allowedPfpFileFormats = ['jpeg', 'png', 'webp', 'jfif'];
 const maxPfpFileSize = 2000000; // 3 mb
 const pfpUploadPath = __dirname + '/public/attachments/pfp/';
 
@@ -260,7 +260,7 @@ app.post('/register', async (req, res) => {
     let rawPass = req.body?.rawPass;
     let pfpFile = req.files?.pfpFile;
 
-
+    console.log(pfpFile);
 
     let userData = {
         username: username,
