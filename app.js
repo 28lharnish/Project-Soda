@@ -53,6 +53,19 @@ async function createNewUser(userData) { // just put async everywhere until it w
 
 }
 
+async function getUserByUsername(username) {
+    return new Promise(async (resolve, reject) => {
+        await db.get("SELECT * FROM users WHERE username = ?", [username], (err, row) => {
+            if (err) {
+                reject(err);
+            }
+
+            user = row;
+            resolve(user);
+        })
+    });
+}
+
 function hashPassword(rawPass) {
     return new Promise((resolve, reject) => {
         let hashedPass;
@@ -70,7 +83,7 @@ function hashPassword(rawPass) {
 
 function isUsernameTaken(username) {
     return new Promise((resolve, reject) => {
-        db.get(`SELECT id FROM users WHERE username = "${username}"`, (err, row) => {
+        db.get(`SELECT id FROM users WHERE username = ?`, [username], (err, row) => {
             if (err) {
                 return reject(err);
             }
@@ -81,7 +94,7 @@ function isUsernameTaken(username) {
 }
 
 function isUsernameValid(username) {
-    if(!username){
+    if (!username) {
         return false;
     }
 
@@ -97,7 +110,7 @@ function isUsernameValid(username) {
 
 function isRawPasswordValid(rawPass) {
 
-    if(!rawPass){
+    if (!rawPass) {
         return false;
     }
 
@@ -113,7 +126,7 @@ function isRawPasswordValid(rawPass) {
 
 function isPfpValid(pfpFile) {
 
-    if(!pfpFile){
+    if (!pfpFile) {
         return false;
     }
 
@@ -127,7 +140,7 @@ function isPfpValid(pfpFile) {
 
 }
 
-async function isUserDataValid(userData) {
+async function isRegisterDataValid(userData) {
     let error;
     let usernameTaken;
 
@@ -143,17 +156,45 @@ async function isUserDataValid(userData) {
     } else if (!isRawPasswordValid(userData.rawPass)) {
         error = `Password must be at least ${minPasswordLength} characters long and less than ${maxPasswordLength} characters long.`;
     } else if (!isPfpValid(userData.pfpFile)) {
-        error = `PFP must be less than ${maxPfpFileSize / 1000000}mb and type `
-        for(i in allowedPfpFileFormats){
+        error = `PFP must be less than ${maxPfpFileSize / 1000000}mb and type `;
+        for (i in allowedPfpFileFormats) {
             let ext = allowedPfpFileFormats[i];
-            if(i == allowedPfpFileFormats.length - 1){
+            if (i == allowedPfpFileFormats.length - 1) {
                 error += " or " + ext;
             } else {
                 error += ext + ", "
             }
         }
         error += ".";
-    } 
+    }
+
+    return error;
+}
+
+async function isLoginDataValid(userData) {
+    let error;
+    let userExists;
+    await isUsernameTaken(userData.username).then(exists => {
+        userExists = exists;
+    });
+
+    if (userExists) {
+        let user;
+        await getUserByUsername(userData.username).then(u => {
+            user = u;
+        });
+
+        let hashedPass = user.password;
+
+        await bcrypt.compare(userData.rawPass, hashedPass).then(match => {
+            if (!match) {
+                error = "Wrong-o Password-o.";
+            }
+        });
+
+    } else {
+        error = "You do not exist.";
+    }
 
     return error;
 }
@@ -175,13 +216,41 @@ app.get('/', (req, res) => {
 });
 
 app.get('/chat', (req, res) => {
-    res.render('chat', {user: { //FOR TESTING NOT DONE YET
-        username: "CHAT"
-    }});
+    res.render('chat', {
+        user: { //FOR TESTING NOT DONE YET
+            username: "CHAT"
+        }
+    });
+});
+
+app.get('/login', async (req, res) => {
+    res.render('login');
 });
 
 app.get('/register', async (req, res) => {
     res.render('register');
+});
+
+app.post('/login', async (req, res) => {
+    let username = req.body?.username;
+    let rawPass = req.body?.rawPass;
+    let rememberMe = req.body?.rememberMe;
+
+    let userData = {
+        username: username,
+        rawPass: rawPass,
+        rememberMe: rememberMe,
+    }
+
+    let error = await isLoginDataValid(userData);
+
+    if (error) {
+        res.render('login', { error: error });
+        return
+    }
+
+    res.redirect('/chat');
+
 });
 
 app.post('/register', async (req, res) => {
@@ -200,11 +269,11 @@ app.post('/register', async (req, res) => {
     }
 
     //console.log(userData);
-    let error = await isUserDataValid(userData);
+    let error = await isRegisterDataValid(userData);
 
     console.log(error);
     if (error) {
-        res.render('register', {error: error});
+        res.render('register', { error: error });
         console.log("EH I'M ERRORING HERE!");
         return
     }
@@ -215,3 +284,5 @@ app.post('/register', async (req, res) => {
         res.redirect('/chat');
     });
 });
+
+//  merry christmas you filthy animal - kevin mcallister 1990 - home alone 2 lost in new york - 1992 - john hughes - chris columbus - macaulay culkin - joe pesci - daniel stern - catherine o'hara - john heard - tim curry - rob schneider - brenda fricker - eddie bracken - dana ivey
