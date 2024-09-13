@@ -7,14 +7,14 @@
 </head>
 <body>
     <h1>REGISTER</h1>
-    <form action="/register" method="post">
+    <form action="/register" method="post" enctype="multipart/form-data">
         <input type="text" id="usernameBox" name="username">
         <input type="password" id="passwordBox" name="rawPass">
-        <input type="file" id="pfpBox" name="pfpFileName">
+        <input type="file" id="pfpBox" name="pfpFile">
         <button type="submit">GO</button>
     </form>
-    <% if(typeof previousAttempt !== 'undefined') { %>
-        <%= previousAttempt %>
+    <% if(typeof error !== 'undefined') { %>
+        <%= error %>
     <% } %>
     <script src="/socket.io/socket.io.min.js"></script>
     <script src="/public/js/register.js"></script>

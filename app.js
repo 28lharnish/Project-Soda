@@ -1,19 +1,29 @@
 const express = require('express');
+const fileUpload = require('express-fileupload');
 const app = express();
 const fs = require('fs')
 const sql = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
-const { hash } = require('crypto');
+const sanitize = require('sanitize');
 const serv = require('http').Server(app);
 
 const PORT = 3000;
 
 const saltRounds = 10;
-const allowedPfpFileExts = ['jpg', 'png', 'webp', 'jfif'];
+
+const minUsernameLength = 3;
+const maxUsernameLength = 20;
+const minPasswordLength = 3;
+const maxPasswordLength = 20;
+
+const allowedPfpFileFormats = ['jpg', 'png', 'webp', 'jfif'];
+const maxPfpFileSize = 2000000; // 3 mb
+const pfpUploadPath = __dirname + '/public/attachments/pfp/';
 
 app.set('view engine', 'ejs');
 app.use('/', express.static(__dirname + '/'));
 app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload());
 serv.listen(PORT);
 
 let db = new sql.Database('db/database.db');
@@ -21,20 +31,22 @@ let db = new sql.Database('db/database.db');
 async function createNewUser(userData) { // just put async everywhere until it works
     return new Promise(async (resolve, reject) => {
         let username = userData.username;
-        let pfpFileName = userData.pfpFileName;
+        let pfpFile = userData.pfpFile;
+        let pfpFilename = pfpFile.name;
+        let pfpFiletype = pfpFile.mimetype.split('/')[1];
         let hashedPass;
+
+        await pfpFile.mv(`${pfpUploadPath}/${username}.${pfpFiletype}`);
 
         await hashPassword(userData.rawPass).then(hash => {
             hashedPass = hash;
         });
 
-        let createUserSQL = `INSERT INTO users (username, password, pfpfilename) VALUES ("${username}", "${hashedPass}", "${pfpFileName}");`;
+        let createUserSQL = `INSERT INTO users (username, password, pfpfilename) VALUES (?, ?, ?);`;
 
-        db.serialize(() => {
-            db.run(createUserSQL, (err) => {
-                if (err) reject(err);
-                resolve(this.lastID);
-            });
+        db.run(createUserSQL, [username, hashedPass, pfpFilename], (err) => {
+            if (err) reject(err);
+            resolve(this.lastID);
         });
 
     });
@@ -69,7 +81,11 @@ function isUsernameTaken(username) {
 }
 
 function isUsernameValid(username) {
-    let rules = [username.length >= 3];
+    if(!username){
+        return false;
+    }
+
+    let rules = [username.length >= 3, username.length <= maxUsernameLength];
 
     for (rule of rules) {
         if (!rule) return false;
@@ -80,7 +96,12 @@ function isUsernameValid(username) {
 }
 
 function isRawPasswordValid(rawPass) {
-    let rules = [rawPass.length >= 3];
+
+    if(!rawPass){
+        return false;
+    }
+
+    let rules = [rawPass.length >= minPasswordLength, rawPass.length <= maxPasswordLength];
 
     for (rule of rules) {
         if (!rule) return false;
@@ -90,38 +111,48 @@ function isRawPasswordValid(rawPass) {
     return true;
 }
 
-function isPfpValid(pfpFileName) {
+function isPfpValid(pfpFile) {
 
-    if (pfpFileName.length === 0) {
+    if(!pfpFile){
         return false;
     }
 
-    let fileExt = pfpFileName.split('.');
-    fileExt = fileExt[fileExt.length - 1];
+    let rules = [allowedPfpFileFormats.includes(pfpFile.mimetype.split('/')[1]), pfpFile.size < maxPfpFileSize];
 
-    if (!allowedPfpFileExts.includes(fileExt)) {
-        return false;
+    for (rule of rules) {
+        if (!rule) return false;
     }
 
     return true;
+
 }
 
 async function isUserDataValid(userData) {
     let error;
     let usernameTaken;
+
     await isUsernameTaken(userData.username).then(isTaken => {
         usernameTaken = isTaken;
     });
 
     //I'm a dirty hypocrite
     if (usernameTaken) {
-        error = "USERNAME TAKEN";
+        error = "Username is not available.";
     } else if (!isUsernameValid(userData.username)) {
-        error = "INVALID USERNAME";
+        error = `Username must be at least ${minUsernameLength} characters long and less than ${maxUsernameLength} characters long.`;
     } else if (!isRawPasswordValid(userData.rawPass)) {
-        error = "INVALID PASSWORD";
-    } else if (!isPfpValid(userData.pfpFileName)) {
-        error = "INVALID PFP";
+        error = `Password must be at least ${minPasswordLength} characters long and less than ${maxPasswordLength} characters long.`;
+    } else if (!isPfpValid(userData.pfpFile)) {
+        error = `PFP must be less than ${maxPfpFileSize / 1000000}mb and type `
+        for(i in allowedPfpFileFormats){
+            let ext = allowedPfpFileFormats[i];
+            if(i == allowedPfpFileFormats.length - 1){
+                error += " or " + ext;
+            } else {
+                error += ext + ", "
+            }
+        }
+        error += ".";
     } 
 
     return error;
@@ -149,25 +180,31 @@ app.get('/chat', (req, res) => {
     }});
 });
 
+app.get('/register', async (req, res) => {
+    res.render('register');
+});
+
 app.post('/register', async (req, res) => {
     let ip = req.socket.remoteAddress;
-    let username = req.body.username;
-    let rawPass = req.body.rawPass;
-    let pfpFileName = req.body.pfpFileName;
+
+    let username = req.body?.username;
+    let rawPass = req.body?.rawPass;
+    let pfpFile = req.files?.pfpFile;
+
+
 
     let userData = {
         username: username,
         rawPass: rawPass,
-        pfpFileName: pfpFileName
+        pfpFile: pfpFile,
     }
 
-    console.log(userData);
+    //console.log(userData);
+    let error = await isUserDataValid(userData);
 
-    let errorCode = await isUserDataValid(userData);
-
-    console.log(errorCode);
-    if (errorCode) {
-        res.render('register', { previousAttempt: errorCode });
+    console.log(error);
+    if (error) {
+        res.render('register', {error: error});
         console.log("EH I'M ERRORING HERE!");
         return
     }
