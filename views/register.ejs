@@ -7,13 +7,18 @@
 </head>
 <body>
     <h1>REGISTER</h1>
+
+    <% if(!formData) {%>
+        <% formData = {} %>
+    <% } %>
+
     <form action="/register" method="post" enctype="multipart/form-data">
-        <input type="text" id="usernameBox" name="username">
-        <input type="password" id="passwordBox" name="rawPass">
+        <input type="text" id="usernameBox" name="username" value="<%= formData.username %>">
+        <input type="password" id="passwordBox" name="rawPass" value="<%= formData.rawPass %>">
         <input type="file" id="pfpBox" name="pfpFile">
         <button type="submit">GO</button>
     </form>
-    <% if(typeof error !== 'undefined') { %>
+    <% if(error) { %>
         <%= error %>
     <% } %>
     <script src="/socket.io/socket.io.min.js"></script>

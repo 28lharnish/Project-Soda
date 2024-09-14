@@ -1,0 +1,8 @@
+{
+    "minUsernameLength": 3,
+    "maxUsernameLength": 30,
+    "minPasswordLength": 3,
+    "maxPasswordLength": 30,
+    "maxPfpFileSize": 5000000,
+    "allowedPfpFileFormats": ["jpeg", "png", "webp", "jfif"]
+}

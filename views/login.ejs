@@ -8,14 +8,12 @@
 <body>
     <h1>LOGIN</h1>
     <form action="/login" method="post">
-        <input type="text" id="usernameBox" name="username">
-        <input type="password" id="passwordBox" name="rawPass">
-        <input type="checkbox" id="rememberMeBox" name="rememberMe">
+        <input type="text" id="usernameBox" name="username" value="<%= formData?.username %>">
+        <input type="password" id="passwordBox" name="rawPass" value="<%= formData?.rawPass %>">
+        <input type="checkbox" id="rememberMeBox" name="rememberMe" value="checked" <%= formData?.rememberMe ? 'checked' : ''%>>
         <button type="submit">GO</button>
     </form>
-    <% if(typeof error !== 'undefined') { %>
-        <%= error %>
-    <% } %>
+    <%= locals?.error %>
     <script src="/socket.io/socket.io.min.js"></script>
     <script src="/public/js/register.js"></script>
 </body>
