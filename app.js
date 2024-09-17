@@ -1,10 +1,12 @@
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const fileUpload = require('express-fileupload');
 const app = express();
 const fs = require('fs')
 const sql = require('sqlite3').verbose();
+const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const sanitize = require('sanitize');
 const serv = require('http').Server(app);
@@ -14,13 +16,24 @@ const util = require('./util');
 const PORT = 3000;
 
 const conifg = require('./config.json');
+const { getUnpackedSettings } = require('http2');
+
+const sessionSecret = util.generateToken();
+
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Ensure cookies are only sent over HTTPS in production
+    sameSite: 'Strict', // CSRF protection
+    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+  };
 
 app.set('view engine', 'ejs');
 app.use(session({
-    secret: 'secret key',
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
 }));
+app.use(cookieParser())
 
 app.use('/', express.static(__dirname + '/'));
 app.use(express.urlencoded({ extended: true }));
@@ -42,26 +55,30 @@ io.on('connection', function (socket) {
 
 app.get('/', (req, res) => {
     let ip = req.socket.remoteAddress;
-    if(req.session.user){
-        res.redirect('/chat');
-    } else {
-        res.redirect('/login');
-    }
-    console.log(req.session);
+    res.redirect('/chat');
 });
 
-app.get('/chat', (req, res) => {
+app.get('/chat', async (req, res) => {
 
-    if(req.session.user){
+    if(req.session.userToken){
+        let userData = await util.getUserByToken(req.session.userToken);
+        if(!userData) return;
+
+        userData.password = "";
+
         res.render('chat', {
-            user: req.session.user
+            user: userData
         });
-    } else {
-        res.redirect('/login');
+
+        return;
     }
+
+    res.redirect('/login');
 });
 
 app.get('/login', async (req, res) => {
+    console.log(req.cookies);
+    console.log(req.session);
     res.render('login', { error: null, formData: null });
 });
 
@@ -89,8 +106,17 @@ app.post('/login', async (req, res) => {
         return
     }
 
-    await util.getUserByUsername(formData.username).then(user => {
-        req.session.user = user;
+    await util.getUserByUsername(formData.username).then(async user => {
+        let token = util.generateToken();
+        req.session.userToken = token;
+
+        await util.setNewUserToken(user.id, token);
+
+        if(formData.rememberMe){
+            res.cookie('rememberMeToken', token, cookieOptions);
+        } else {
+            res.clearCookie('rememberMeToken');
+        }
         res.redirect('/chat');
     });
 
@@ -121,8 +147,8 @@ app.post('/register', async (req, res) => {
     }
 
     registerLogin.createNewUser(formData).then(user => {
-        user.password = "ah ah ah, you didn't say the magic word";
-        req.session.user = user;
+        user.password = "";
+        req.session.userToken = user.token;
         res.redirect('/chat');
     });
 });

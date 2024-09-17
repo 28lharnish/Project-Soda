@@ -45,9 +45,10 @@ async function createNewUser(userData) { // just put async everywhere until it w
             hashedPass = hash;
         });
 
-        let createUserSQL = `INSERT INTO users (username, password, pfpfilename) VALUES (?, ?, ?);`;
+        let createUserSQL = `INSERT INTO users (username, password, pfpfilename, token) VALUES (?, ?, ?, ?);`;
+        let userToken = util.generateToken();
 
-        await db.run(createUserSQL, [username, hashedPass, pfpFilename], async (err) => {
+        await db.run(createUserSQL, [username, hashedPass, pfpFilename, userToken], async (err) => {
             if (err) reject(err);
             await util.getUserByUsername(username).then(user => {
                 resolve(user);

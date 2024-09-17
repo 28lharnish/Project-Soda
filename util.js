@@ -1,6 +1,36 @@
 const config = require('./config.json');
 const sql = require('sqlite3').verbose();
+const crypto = require('crypto');
 let db = new sql.Database('db/database.db');
+
+
+function generateToken(){
+    return crypto.randomBytes(64).toString('hex');
+}
+
+async function setNewUserToken(id, token){
+    return new Promise(async (resolve, reject) => {
+        await db.run("UPDATE users SET token = ? WHERE id = ?", [token, id], (err) => {
+            if (err) {
+                reject(err);
+            }
+            resolve();
+        })
+    });
+}
+
+async function getUserByToken(token) {
+    return new Promise(async (resolve, reject) => {
+        await db.get("SELECT * FROM users WHERE token = ?", [token], (err, row) => {
+            if (err) {
+                reject(err);
+            }
+
+            user = row;
+            resolve(user);
+        })
+    });
+}
 
 async function getUserByUsername(username) {
     return new Promise(async (resolve, reject) => {
@@ -42,5 +72,8 @@ async function getLastUserId(){
 module.exports = {
     getUserByUsername,
     getUserByID,
-    getLastUserId
+    getUserByToken,
+    getLastUserId,
+    setNewUserToken,
+    generateToken
 }
