@@ -1,4 +1,3 @@
 /node_modules
 /db/database.db
-/public/attachments/*
-!/public/attachments/
+/public/uploads/*/*

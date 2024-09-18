@@ -31,7 +31,7 @@ app.set('view engine', 'ejs');
 app.use(session({
     secret: sessionSecret,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: false
 }));
 app.use(cookieParser())
 
@@ -41,6 +41,27 @@ app.use(fileUpload());
 serv.listen(PORT);
 
 let db = new sql.Database('db/database.db');
+
+
+async function isAuthenticated(req, res, next){
+    if(req.session.user){
+        next();
+        return;
+    }
+
+    if(req.cookies.rememberMeToken){
+        let user = await util.getUserByToken(req.cookies.rememberMeToken);
+
+        if(user){
+            req.session.user = user;
+            next();
+            return;
+        }
+
+    }
+
+    res.redirect('/login');
+}
 
 
 const io = require('socket.io')(serv);
@@ -58,27 +79,13 @@ app.get('/', (req, res) => {
     res.redirect('/chat');
 });
 
-app.get('/chat', async (req, res) => {
+app.get('/chat', isAuthenticated, async (req, res) => {
 
-    if(req.session.userToken){
-        let userData = await util.getUserByToken(req.session.userToken);
-        if(!userData) return;
+    res.render('chat', {user: req.session.user});
 
-        userData.password = "";
-
-        res.render('chat', {
-            user: userData
-        });
-
-        return;
-    }
-
-    res.redirect('/login');
 });
 
 app.get('/login', async (req, res) => {
-    console.log(req.cookies);
-    console.log(req.session);
     res.render('login', { error: null, formData: null });
 });
 
@@ -90,8 +97,6 @@ app.post('/login', async (req, res) => {
     let username = req.body?.username;
     let rawPass = req.body?.rawPass;
     let rememberMe = req.body?.rememberMe === "checked";
-
-    console.log(rememberMe);
 
     let formData = {
         username: username,
@@ -107,8 +112,9 @@ app.post('/login', async (req, res) => {
     }
 
     await util.getUserByUsername(formData.username).then(async user => {
+        console.log(user);
         let token = util.generateToken();
-        req.session.userToken = token;
+        req.session.user = user;
 
         await util.setNewUserToken(user.id, token);
 
@@ -123,12 +129,14 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
+
+    //TODO make pfps optional
+
     let ip = req.socket.remoteAddress;
 
     let username = req.body?.username;
     let rawPass = req.body?.rawPass;
     let pfpFile = req.files?.pfpFile;
-    console.log(pfpFile);
 
     let formData = {
         username: username,
@@ -136,7 +144,6 @@ app.post('/register', async (req, res) => {
         pfpFile: pfpFile,
     }
 
-    //console.log(userData);
     let error = await registerLogin.isRegisterDataValid(formData);
 
     console.log(error);
@@ -148,8 +155,8 @@ app.post('/register', async (req, res) => {
 
     registerLogin.createNewUser(formData).then(user => {
         user.password = "";
-        req.session.userToken = user.token;
-        res.redirect('/chat');
+        req.session.user = user;
+        res.redirect('/');
     });
 });
 
