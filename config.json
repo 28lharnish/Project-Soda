@@ -1,4 +1,5 @@
 {
     "saltRounds": 10,
-    "pfpUploadPath": "/public/uploads/pfp/"
+    "pfpUploadPath": "/public/uploads/pfp/",
+    "defaultPfpPath": "/public/img/STEVEN.png"
 }

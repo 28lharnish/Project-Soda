@@ -86,7 +86,8 @@ app.get('/chat', isAuthenticated, async (req, res) => {
 });
 
 app.get('/login', async (req, res) => {
-    res.render('login', { error: null, formData: null });
+    let redirect = req.query?.redirect;
+    res.render('login', { error: null, formData: null, redirect: redirect });
 });
 
 app.get('/register', async (req, res) => {
@@ -94,6 +95,8 @@ app.get('/register', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
+
+    let redirect = req.body?.redirect;
     let username = req.body?.username;
     let rawPass = req.body?.rawPass;
     let rememberMe = req.body?.rememberMe === "checked";
@@ -118,12 +121,18 @@ app.post('/login', async (req, res) => {
 
         await util.setNewUserToken(user.id, token);
 
-        if(formData.rememberMe){
+        if (formData.rememberMe) {
             res.cookie('rememberMeToken', token, cookieOptions);
         } else {
             res.clearCookie('rememberMeToken');
         }
-        res.redirect('/chat');
+        
+        if (redirect) {
+            res.redirect("/" + redirect);
+        } else {
+            res.redirect('/');
+        }
+
     });
 
 });
@@ -134,6 +143,7 @@ app.post('/register', async (req, res) => {
 
     let ip = req.socket.remoteAddress;
 
+    let redirect = req.body?.redirect;
     let username = req.body?.username;
     let rawPass = req.body?.rawPass;
     let pfpFile = req.files?.pfpFile;
@@ -156,7 +166,13 @@ app.post('/register', async (req, res) => {
     registerLogin.createNewUser(formData).then(user => {
         user.password = "";
         req.session.user = user;
-        res.redirect('/');
+        
+        if(redirect){
+            res.redirect("/" + redirect);
+        } else {
+            res.redirect("/");
+        }
+
     });
 });
 

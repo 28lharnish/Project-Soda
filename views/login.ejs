@@ -11,6 +11,7 @@
         <input type="text" id="usernameBox" name="username" value="<%= formData?.username %>">
         <input type="password" id="passwordBox" name="rawPass" value="<%= formData?.rawPass %>">
         <input type="checkbox" id="rememberMeBox" name="rememberMe" value="checked" <%= formData?.rememberMe ? 'checked' : ''%>>
+        <input type="hidden" name="redirect" value="<%= locals?.redirect %>">
         <button type="submit">GO</button>
     </form>
     <%= locals?.error %>
