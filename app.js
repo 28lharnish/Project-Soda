@@ -76,7 +76,7 @@ io.on('connection', function (socket) {
 
 app.get('/', (req, res) => {
     let ip = req.socket.remoteAddress;
-    res.redirect('/chat');
+    res.redirect('/rooms');
 });
 
 app.get('/chat', isAuthenticated, async (req, res) => {
@@ -85,6 +85,13 @@ app.get('/chat', isAuthenticated, async (req, res) => {
 
 });
 
+app.get('/rooms', isAuthenticated, async (req, res) => {
+
+    let rooms = await util.getUserRooms(req.session.user.id);
+
+    res.render('rooms', {rooms: rooms});
+
+});
 app.get('/login', async (req, res) => {
     let redirect = req.query?.redirect;
     res.render('login', { error: null, formData: null, redirect: redirect });
