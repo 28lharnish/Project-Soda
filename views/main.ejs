@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="./public/css/style.css">
     <style>
         * {
             box-sizing: border-box;
@@ -23,7 +24,7 @@
         }
 
         #header-container {
-            background-color: #0078d4;
+            background-color: var(--bg-color);
             color: white;
             padding: 0.5rem;
         }
@@ -35,16 +36,18 @@
 
         #chat-container {
             flex: 1;
-            background-color: white;
+            background-color: var(--bg-color3);
             padding: 1rem;
             overflow-y: auto;
+            box-shadow: -10px 0 15px rgba(40, 40, 40, 0.5);
         }
 
         #sidebar-container {
             width: 250px;
-            background-color: #f3f3f3;
+            background-color: var(--bg-color2);
             padding: 1rem;
             overflow-y: auto;
+            border: 1px solid #000;
         }
     </style>
 </head>
