@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100%;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #header-container {
+            background-color: #0078d4;
+            color: white;
+            padding: 0.5rem;
+        }
+
+        #main-container {
+            display: flex;
+            flex: 1;
+        }
+
+        #chat-container {
+            flex: 1;
+            background-color: white;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        #sidebar-container {
+            width: 250px;
+            background-color: #f3f3f3;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="container">
+        <div id="header-container">
+            <%- include('./partials/header') %>
+        </div>
+        <div id="main-container">
+            <div id="sidebar-container">
+                <%- include('./partials/rooms.ejs') %>
+            </div>
+            <div id="chat-container">
+                <%- include('./partials/chat.ejs') %>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

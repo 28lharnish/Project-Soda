@@ -15,7 +15,7 @@
     <form action="/register" method="post" enctype="multipart/form-data">
         <input type="text" id="usernameBox" name="username" value="<%= formData.username %>">
         <input type="password" id="passwordBox" name="rawPass" value="<%= formData.rawPass %>">
-        <input type="file" id="pfpBox" name="pfpFile">
+        <input type="file" id="pfpBox" accept=".png, .jpg, .jpeg, .jfif, .webp" name="pfpFile">
         <input type="hidden" name="redirect" value="<%= locals?.redirect %>">
         <button type="submit">GO</button>
     </form>

@@ -74,12 +74,16 @@ io.on('connection', function (socket) {
     });
 });
 
-app.get('/', (req, res) => {
+app.get('/', isAuthenticated, async (req, res) => {
     let ip = req.socket.remoteAddress;
-    res.redirect('/rooms');
+
+    res.render('main', {
+        user: req.session.user, 
+        rooms: await util.getUserRooms(req.session.user.id)
+    });
 });
 
-app.get('/chat', isAuthenticated, async (req, res) => {
+/*app.get('/chat', isAuthenticated, async (req, res) => {
 
     res.render('chat', {user: req.session.user});
 
@@ -91,7 +95,8 @@ app.get('/rooms', isAuthenticated, async (req, res) => {
 
     res.render('rooms', {rooms: rooms});
 
-});
+});*/
+
 app.get('/login', async (req, res) => {
     let redirect = req.query?.redirect;
     res.render('login', { error: null, formData: null, redirect: redirect });

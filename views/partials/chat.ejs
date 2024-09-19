@@ -1,0 +1,13 @@
+
+<style>
+    #chat {
+    }
+</style>
+
+<div id="chat">
+    <% if (rooms.length === 0) {%>
+        <center><h1>nopers</h1></center>
+    <% } %>
+    <script src="/socket.io/socket.io.min.js"></script>
+    <script src="/public/js/chat.js"></script>
+</div>

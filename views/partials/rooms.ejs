@@ -1,0 +1,14 @@
+<style>
+    #chats {
+        
+    }
+</style>
+<div id="chats">
+    <% if (rooms.length === 0) { %>
+        <p>You have no chats</p>
+    <% } else { %>
+        <%= rooms.map(room=> {
+            return `<a href="/chat?roomid=${room.id}">${room.name}</a>`
+        }).join('<br>') %>
+    <% } %>
+</div>
