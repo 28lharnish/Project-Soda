@@ -2,7 +2,29 @@
     #chats {
         
     }
+
+    .closeBtn {
+        cursor: pointer;
+    }
+
+    #modal {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: red;
+    } /*among us sussy"*/
 </style>
+ 
+<div id="ui">
+    <button id="createRoom" onclick="showModal">Create Room</button>
+</div>
+
+<div id="modal">
+    <a class="closeBtn" onclick="hideModal()">&times;</a>
+    <%- include('../modals/createroom.ejs') %>
+</div>
+
 <div id="chats">
     <% if (rooms.length === 0) { %>
         <p>You have no chats</p>
@@ -12,3 +34,13 @@
         }).join('<br>') %>
     <% } %>
 </div>
+
+<script>
+    function showModal(){
+        document.getElementById('modal').style.display = 'block';
+    }
+
+    function hideModal(){
+        document.getElementById('modal').style.display = 'none';
+    }
+</script>
