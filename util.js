@@ -96,12 +96,38 @@ async function getUserRooms(userId) {
     });
 }
 
+async function getLastRoomId() {
+    return new Promise(async (resolve, reject) => {
+        await db.get('SELECT MAX(id) AS lastId FROM rooms', (err, results) => {
+            if (err) reject(err);
+            console.log(results);
+            const lastId = results.lastId;
+            resolve(lastId);
+        });
+    });
+}
+
+async function getRoomByName(name) {
+    return new Promise(async (resolve, reject) => {
+        await db.get("SELECT * FROM rooms WHERE name = ?", [name], (err, row) => {
+            if (err) {
+                reject(err);
+            }
+
+            resolve(row);
+        })
+    });
+}
+
 module.exports = {
     getUserByUsername,
     getUserByID,
     getUserByToken,
-    getUserRooms,
     getLastUserId,
     setNewUserToken,
+    getLastUserId,
+    getUserRooms,
+    getLastRoomId,
+    getRoomByName,
     generateToken
 }

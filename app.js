@@ -11,11 +11,12 @@ const bcrypt = require('bcrypt');
 const sanitize = require('sanitize');
 const serv = require('http').Server(app);
 const registerLogin = require('./registerlogin');
+const rooms = require('./rooms.js');
 const util = require('./util');
 
 const PORT = 3000;
 
-const conifg = require('./config.json');
+const config = require('./config.json');
 const { getUnpackedSettings } = require('http2');
 
 const sessionSecret = util.generateToken();
@@ -44,6 +45,7 @@ let db = new sql.Database('db/database.db');
 
 
 async function isAuthenticated(req, res, next){
+
     if(req.session.user){
         next();
         return;
@@ -60,7 +62,7 @@ async function isAuthenticated(req, res, next){
 
     }
 
-    res.redirect('/login');
+    res.redirect(`/login?redirect=${req.url}`);
 }
 
 
@@ -79,31 +81,23 @@ app.get('/', isAuthenticated, async (req, res) => {
 
     res.render('main', {
         user: req.session.user, 
-        rooms: await util.getUserRooms(req.session.user.id)
+        rooms: await util.getUserRooms(req.session.user.id),
+        cfg: config
     });
 });
 
-/*app.get('/chat', isAuthenticated, async (req, res) => {
+app.get('/funny', isAuthenticated, async (req, res) => {
 
-    res.render('chat', {user: req.session.user});
-
+    res.send('hehehe yup');
 });
-
-app.get('/rooms', isAuthenticated, async (req, res) => {
-
-    let rooms = await util.getUserRooms(req.session.user.id);
-
-    res.render('rooms', {rooms: rooms});
-
-});*/
 
 app.get('/login', async (req, res) => {
     let redirect = req.query?.redirect;
-    res.render('login', { error: null, formData: null, redirect: redirect });
+    res.render('login', { error: null, formData: null, redirect: redirect, cfg: config });
 });
 
 app.get('/register', async (req, res) => {
-    res.render('register', { error: null, formData: null });
+    res.render('register', { error: null, formData: null, cfg: config });
 });
 
 app.post('/login', async (req, res) => {
@@ -140,7 +134,7 @@ app.post('/login', async (req, res) => {
         }
         
         if (redirect) {
-            res.redirect("/" + redirect);
+            res.redirect(redirect);
         } else {
             res.redirect('/');
         }
@@ -179,13 +173,35 @@ app.post('/register', async (req, res) => {
         user.password = "";
         req.session.user = user;
         
+
         if(redirect){
-            res.redirect("/" + redirect);
+            res.redirect(redirect);
         } else {
             res.redirect("/");
         }
 
     });
+});
+
+app.post("/createroom", isAuthenticated, async (req, res) => {
+
+    let name = req.body?.roomName;
+    let iconFile = req.files?.iconFile;
+    let creator = req.session.user;
+
+    let formData = {
+        roomName: name,
+        creator: creator,
+        iconFile: iconFile
+    }
+
+    //I WILL ADD REQUIREMENTS I AM NOT A SILLY GOOSE.
+    //i just want to see it working
+
+    rooms.createNewRoom(formData).then(room => {
+        res.redirect("/");
+    });
+
 });
 
 //  merry christmas you filthy animal - kevin mcallister 1990 - home alone 2 lost in new york - 1992 - john hughes - chris columbus - macaulay culkin - joe pesci - daniel stern - catherine o'hara - john heard - tim curry - rob schneider - brenda fricker - eddie bracken - dana ivey

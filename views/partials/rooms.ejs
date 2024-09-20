@@ -3,36 +3,10 @@
     #chats {
         
     }
-
-    .closeBtn {
-        cursor: pointer;
-        position: absolute;
-        left: -0.1%; /* I don't even know. I hate css */
-        top: -2%;
-        font-size: 30px;
-        padding: 10px;
-    }
-
-    #modal {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 500px;
-        height: 200px;
-        background-color: red;
-        align-content: center;
-        text-align: center;
-    } /*among us sussy"*/
 </style>
  
 <div id="ui">
-    <button id="createRoom" onclick="showModal()">Create Room</button>
-</div>
-
-<div id="modal">
-    <a class="closeBtn" onclick="hideModal()">&times;</a>
-    <%- include('../modals/createroom.ejs') %>
+    <button id="createRoom" onclick="showModal(modals.createRoom)">Create Room</button>
 </div>
 
 <div id="chats">
@@ -44,13 +18,3 @@
         }).join('<br>') %>
     <% } %>
 </div>
-
-<script>
-    function showModal(){
-        document.getElementById('modal').style.display = 'block';
-    }
-
-    function hideModal(){
-        document.getElementById('modal').style.display = 'none';
-    }
-</script>

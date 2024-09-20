@@ -1,6 +1,6 @@
-const userRequirements = require('./userRequirements.json');
-const util = require('./util');
 const config = require('./config.json');
+const userRequirements = config.userRequirements;
+const util = require('./util');
 const sql = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 
@@ -24,8 +24,9 @@ function hashPassword(rawPass) {
 async function createNewUser(userData) { // just put async everywhere until it works
     return new Promise(async (resolve, reject) => {
         let username = userData.username;
-        let pfpFile = userData.pfpFile;
-        let pfpFiletype = pfpFile.mimetype.split('/')[1];
+        let pfpFile = userData?.pfpFile;
+        let pfpFiletype = pfpFile?.mimetype.split('/')[1];
+        let pfpFilename = pfpFile ? `${String(lastId + 1)}.${pfpFiletype}` : config.defaultPfp;
         let hashedPass;
         let lastId = -1;
 
@@ -33,13 +34,13 @@ async function createNewUser(userData) { // just put async everywhere until it w
             lastId = id;
         });
 
-        let pfpFilename = `${String(lastId + 1)}.${pfpFiletype}`;
-
-        if(lastId === -1){
+        if (lastId === -1) {
             reject("Could not get last ID");
         }
 
-        await pfpFile.mv(`${__dirname + config.pfpUploadPath}/${pfpFilename}`);
+        if(pfpFile){
+            await pfpFile.mv(`${__dirname + config.pfpUploadPath}/${pfpFilename}`);
+        }
 
         await hashPassword(userData.rawPass).then(hash => {
             hashedPass = hash;
@@ -106,7 +107,7 @@ function isRawPasswordValid(rawPass) {
 function isPfpValid(pfpFile) {
 
     if (!pfpFile) {
-        return false;
+        return true;
     }
 
     let rules = [userRequirements.allowedPfpFileFormats.includes(pfpFile.mimetype.split('/')[1])];

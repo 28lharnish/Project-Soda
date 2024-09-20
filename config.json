@@ -1,5 +1,20 @@
 {
     "saltRounds": 10,
     "pfpUploadPath": "/public/uploads/pfp/",
-    "defaultPfpPath": "/public/img/STEVEN.png"
+    "iconUploadPath": "/public/uploads/icon/",
+    "defaultPfp": "/public/img/STEVEN.png",
+    "userRequirements": {
+        "minUsernameLength": 3,
+        "maxUsernameLength": 30,
+        "minPasswordLength": 3,
+        "maxPasswordLength": 30,
+        "maxPfpFileSize": 5000000,
+        "allowedPfpFileFormats": ["jpeg", "png", "webp", "jfif"]
+    },
+    "roomRequirements": {
+        "minRoomnameLength": 3,
+        "maxRoomnameLength": 30,
+        "maxIconFileSize": 5000000,
+        "allowedIconFileFormats": ["jpeg", "png", "webp", "jfif"]
+    }
 }

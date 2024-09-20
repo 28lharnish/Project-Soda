@@ -1,15 +1,51 @@
 :root {
-    --bg-color: #212121;
-    --bg-color2: #323232;
-    --bg-color3: #424242;
-    --btn-text-color: #aaa;
-    --btn-bg-color: #666;
+    --header-bg-color: #111;
+    --rooms-bg-color: #252525;
+    --chat-bg-color: #333;
+    --modal-bg-color: #555;
+    --text-color: #fff;
+    --btn-text-color: #fff;
+    --btn-bg-color: #0026ff;
+    --btn-bg-color-hover: #0926c9;
+}
+
+h1 {
 }
 
 button {
-    
+    color: var(--btn-text-color);
+    background-color: var(--btn-bg-color);
+    border-radius: 10px;
+    border: none;
+    padding: 10px;
 }
 
 button:hover {
+    cursor: pointer;
+    color: var(--btn-text-color);
+    background-color: var(--btn-bg-color-hover);
+}
+
+button:active {
+    transform: scale(0.97, 0.97);
+}
+
+input[type='text'] {
+    font-size: 1rem;
+    padding: 6px;
+}
+
+#modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 200px;
+    background-color: var(--modal-bg-color);
+    align-content: center;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 10px;
 
 }
