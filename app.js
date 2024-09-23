@@ -78,10 +78,13 @@ io.on('connection', function (socket) {
 
 app.get('/', isAuthenticated, async (req, res) => {
     let ip = req.socket.remoteAddress;
+    let rooms = await util.getUserRooms(req.session.user.id);
+
+    console.log(rooms);
 
     res.render('main', {
         user: req.session.user, 
-        rooms: await util.getUserRooms(req.session.user.id),
+        rooms: rooms,
         cfg: config
     });
 });

@@ -66,8 +66,7 @@ async function getLastUserId() {
     return new Promise(async (resolve, reject) => {
         await db.get('SELECT MAX(id) AS lastId FROM users', (err, results) => {
             if (err) reject(err);
-            console.log(results);
-            const lastId = results.lastId;
+            let lastId = (results.lastId != null) ? results.lastId : 1;
             resolve(lastId);
         });
     });
@@ -77,25 +76,25 @@ async function getUserRooms(userId) {
     let memberships = [];
     let rooms = [];
     return new Promise(async (resolve, reject) => {
-        await db.all("SELECT * FROM members WHERE userid = ?", [userId], (err, rows) => {
+        db.all("SELECT * FROM members WHERE userid = ?", [userId], (err, rows) => {
             if (err) {
                 reject(err);
             }
 
             memberships = rows;
+
+            for (m of memberships) {
+                db.get("SELECT * FROM rooms WHERE id = ?", [m.roomid], (err, row) => {
+                    if (err) {
+                        reject(err);
+                    }
+    
+                    rooms.push(row);
+                });
+            }
+    
+            resolve(rooms);
         });
-
-        for (m of memberships) {
-            await db.get("SELECT * FROM rooms WHERE id = ?", [m.roomid], (err, row) => {
-                if (err) {
-                    reject(err);
-                }
-
-                rooms.push(row);
-            });
-        }
-
-        resolve(rooms);
 
     });
 }
@@ -104,10 +103,22 @@ async function getLastRoomId() {
     return new Promise(async (resolve, reject) => {
         await db.get('SELECT MAX(id) AS lastId FROM rooms', (err, results) => {
             if (err) reject(err);
-            console.log(results);
-            const lastId = results.lastId;
+            let lastId = (results.lastId != null) ? results.lastId : 1;
             resolve(lastId);
         });
+    });
+}
+
+async function getRoomById(id) {
+    return new Promise(async (resolve, reject) => {
+        await db.get("SELECT * FROM rooms WHERE id = ?", [id], (err, row) => {
+            if (err) {
+                reject(err);
+            }
+
+            room = row;
+            resolve(room);
+        })
     });
 }
 
@@ -132,6 +143,7 @@ module.exports = {
     getLastUserId,
     getUserRooms,
     getLastRoomId,
+    getRoomById,
     getRoomByName,
     generateToken
 }

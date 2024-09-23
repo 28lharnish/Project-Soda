@@ -26,7 +26,6 @@ async function createNewUser(userData) { // just put async everywhere until it w
         let username = userData.username;
         let pfpFile = userData?.pfpFile;
         let pfpFiletype = pfpFile?.mimetype.split('/')[1];
-        let pfpFilename = pfpFile ? `${String(lastId + 1)}.${pfpFiletype}` : config.defaultPfp;
         let hashedPass;
         let lastId = -1;
 
@@ -37,6 +36,8 @@ async function createNewUser(userData) { // just put async everywhere until it w
         if (lastId === -1) {
             reject("Could not get last ID");
         }
+
+        let pfpFilename = pfpFile ? `${String(lastId + 1)}.${pfpFiletype}` : config.defaultPfp;
 
         if(pfpFile){
             await pfpFile.mv(`${__dirname + config.pfpUploadPath}/${pfpFilename}`);

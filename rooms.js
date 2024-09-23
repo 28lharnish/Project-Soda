@@ -9,7 +9,7 @@ let db = new sql.Database('db/database.db');
 async function createNewRoom(roomData) { // just put async everywhere until it works
     return new Promise(async (resolve, reject) => {
         let roomName = roomData.roomName;
-        let creator = roomData.creator;
+        let owner = roomData.creator;
         let iconFile = roomData?.iconFile;
         let iconFiletype = iconFile?.mimetype.split('/')[1];
         let iconFilename = iconFile ? `${String(lastId + 1)}.${pfpFiletype}` : config.defaultPfp;
@@ -19,35 +19,25 @@ async function createNewRoom(roomData) { // just put async everywhere until it w
             lastId = id;
         });
 
-        if (lastId === -1) {
-            reject("Could not get last ID");
-        }
-
-        if(iconFile){
+        if (iconFile) {
             await iconFile.mv(`${__dirname + config.iconUploadPath}/${iconFilename}`);
         }
 
-        let createRoomSQL = `INSERT INTO rooms (name, iconfilename) VALUES (?, ?);`;
-        let createMembershipSQL = `INSERT INTO members (roomid, userid) VALUES (?, ?)`;
-        let room;
-        await db.run(createRoomSQL, [roomName, iconFilename], async (err) => {
-            if (err) reject(err);
-            await util.getRoomByName(roomName).then(r => {
-                room = r;
+        let createRoomSQL = `INSERT INTO rooms (name, iconfilename, ownerid) VALUES (?, ?, ?);`;
+        let createMembershipSQL = `INSERT INTO members (userid, roomid) VALUES (?, ?)`;
+
+        let room = await new Promise(async (resolve, reject) => { // I hate async programming
+            db.run(createRoomSQL, [roomName, iconFilename, owner.id], async (err) => {
+                if (err) reject(err);
+                let room = await util.getRoomById(lastId)
+
+                db.run(createMembershipSQL, [owner.id, room.id], async (err) => {
+                    if (err) reject(err);
+                    resolve(room);
+                });
+
             });
         });
-
-        if(!room){
-            reject("no worky");
-        }
-
-        console.log(room);
-
-        await db.run(createMembershipSQL, [room.id, creator.id], async(err) => {
-            if(err) reject(err);
-            resolve(room);
-        });
-
     });
 
 }
