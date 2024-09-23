@@ -73,26 +73,27 @@ async function getLastUserId() {
 }
 
 async function getUserRooms(userId) {
-    let memberships = [];
-    let rooms = [];
     return new Promise(async (resolve, reject) => {
+
         db.all("SELECT * FROM members WHERE userid = ?", [userId], (err, rows) => {
             if (err) {
                 reject(err);
             }
 
-            memberships = rows;
+            let memberships = rows;
+            let rooms = [];
 
-            for (m of memberships) {
-                db.get("SELECT * FROM rooms WHERE id = ?", [m.roomid], (err, row) => {
-                    if (err) {
-                        reject(err);
-                    }
-    
-                    rooms.push(row);
-                });
-            }
-    
+            const getRoomsSQL = "SELECT * FROM rooms WHERE id IN (" + memberships.map(m => "?").join(",") + ")"; // real
+
+            console.log(memberships.map(m => m.roomid));
+
+            db.all(getRoomsSQL, memberships.map(m => m.roomid), (err, row) => {
+                if (err) {
+                    reject(err);
+                }
+                rooms.push(row);
+            });
+
             resolve(rooms);
         });
 
