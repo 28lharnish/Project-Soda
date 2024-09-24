@@ -3,6 +3,7 @@
     <br>
     <form action="/createroom" method="post">
         <input type="text" id="roomNameBox" name="roomName" placeholder="Room Name" maxlength="">
+        <p><%= locals?.modalError %></p>
         <button type="submit">Create</button>
     </form>
 </div>

@@ -79,12 +79,16 @@ io.on('connection', function (socket) {
 app.get('/', isAuthenticated, async (req, res) => {
     let ip = req.socket.remoteAddress;
     let rooms = await util.getUserRooms(req.session.user.id);
+    let openModal = req.query?.openmodal;
+    let modalError = req.query?.modalerror;
 
     console.log(rooms);
 
     res.render('main', {
         user: req.session.user, 
         rooms: rooms,
+        openModal: openModal,
+        modalError: modalError,
         cfg: config
     });
 });
@@ -196,6 +200,15 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
         roomName: name,
         creator: creator,
         iconFile: iconFile
+    }
+
+    let error = await rooms.isRoomDataValid(formData);
+
+    console.log(error);
+
+    if(error){
+        res.redirect("/?modalerror=" + error);
+        return;
     }
 
     //I WILL ADD REQUIREMENTS I AM NOT A SILLY GOOSE.

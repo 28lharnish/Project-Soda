@@ -81,20 +81,18 @@ async function getUserRooms(userId) {
             }
 
             let memberships = rows;
-            let rooms = [];
 
             const getRoomsSQL = "SELECT * FROM rooms WHERE id IN (" + memberships.map(m => "?").join(",") + ")"; // real
 
-            console.log(memberships.map(m => m.roomid));
+            //console.log(memberships.map(m => m.roomid));
+            console.log(memberships);
 
-            db.all(getRoomsSQL, memberships.map(m => m.roomid), (err, row) => {
+            db.all(getRoomsSQL, memberships.map(m => m.roomid), (err, rows) => {
                 if (err) {
                     reject(err);
                 }
-                rooms.push(row);
+                resolve(rows);
             });
-
-            resolve(rooms);
         });
 
     });

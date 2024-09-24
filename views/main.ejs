@@ -68,6 +68,10 @@
 
 <body>
 
+    <% if(locals?.openModal) { %>
+        <script>showModal(<%= locals.openModal %>);</script>
+    <% } %>
+
     <div id="container">
         <div id="header-container">
             <%- include('./partials/header') %>
