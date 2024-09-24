@@ -84,9 +84,6 @@ async function getUserRooms(userId) {
 
             const getRoomsSQL = "SELECT * FROM rooms WHERE id IN (" + memberships.map(m => "?").join(",") + ")"; // real
 
-            //console.log(memberships.map(m => m.roomid));
-            console.log(memberships);
-
             db.all(getRoomsSQL, memberships.map(m => m.roomid), (err, rows) => {
                 if (err) {
                     reject(err);

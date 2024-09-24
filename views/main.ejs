@@ -68,10 +68,6 @@
 
 <body>
 
-    <% if(locals?.openModal) { %>
-        <script>showModal(<%= locals.openModal %>);</script>
-    <% } %>
-
     <div id="container">
         <div id="header-container">
             <%- include('./partials/header') %>
@@ -92,10 +88,13 @@
     </div>
 
     <script>
-
         let modals = {
-            createRoom: `<%- include('./modals/createroom.ejs') %>`
+            createroom: `<%- include('./modals/createroom.ejs') %>`
         };
+
+        <% if (locals?.openModal) { %>
+            showModal(modals["<%- locals?.openModal %>"]);
+        <% } %>
 
         function showModal(modal) {
             document.getElementById('modal-content').innerHTML = modal;

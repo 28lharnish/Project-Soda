@@ -58,7 +58,6 @@ async function isRoomNameTaken(roomName) {
 }
 
 async function isRoomNameValid(roomName) {
-
     if(!roomName){
         return false;
     }
