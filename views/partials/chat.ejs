@@ -2,12 +2,20 @@
 <style>
     #chat {
     }
+
+    #chat-box {
+        resize: none;
+        height: 30px;
+    }
 </style>
 
 <div id="chat">
     <% if (rooms.length === 0) {%>
         <center><h1>nopers</h1></center>
     <% } %>
+
+    <textarea id="chat-box" cols="50" resizeable="false"></textarea>
+    <button id="send-btn">Send</button>
     <script src="/socket.io/socket.io.min.js"></script>
     <script src="/public/js/chat.js"></script>
 </div>

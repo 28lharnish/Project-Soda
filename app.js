@@ -68,8 +68,7 @@ async function isAuthenticated(req, res, next){
 
 const io = require('socket.io')(serv);
 io.on('connection', function (socket) {
-    let ip = socket.handshake.address
-
+    let ip = socket.handshake.address;
 
     socket.on('disconnect', function () {
 
