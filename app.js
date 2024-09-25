@@ -82,6 +82,8 @@ app.get('/', isAuthenticated, async (req, res) => {
     let openModal = req.query?.openmodal;
     let modalError = req.query?.modalerror;
 
+    console.log(rooms);
+
     res.render('main', {
         user: req.session.user, 
         rooms: rooms,
@@ -208,9 +210,6 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
         res.redirect(`/?openmodal=createroom&modalerror=${error}`);
         return;
     }
-
-    //I WILL ADD REQUIREMENTS I AM NOT A SILLY GOOSE.
-    //i just want to see it working
 
     rooms.createNewRoom(formData).then(room => {
         res.redirect("/");

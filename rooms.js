@@ -9,16 +9,13 @@ let db = new sql.Database('db/database.db');
 
 async function createNewRoom(roomData) { // just put async everywhere until it works
     return new Promise(async (resolve, reject) => {
+        let newID = await util.getLastRoomId() + 1;
         let roomName = roomData.roomName;
         let owner = roomData.creator;
         let iconFile = roomData?.iconFile;
         let iconFiletype = iconFile?.mimetype.split('/')[1];
-        let iconFilename = iconFile ? `${String(lastId + 1)}.${pfpFiletype}` : config.defaultPfp;
-        let lastId = -1;
-
-        await util.getLastRoomId().then(id => {
-            lastId = id;
-        });
+        let iconFilename = iconFile ? `${String(newId)}.${pfpFiletype}` : config.defaultPfp;
+        console.log(`newID: ${newID}`);
 
         if (iconFile) {
             await iconFile.mv(`${__dirname + config.iconUploadPath}/${iconFilename}`);
@@ -30,10 +27,10 @@ async function createNewRoom(roomData) { // just put async everywhere until it w
         let room = await new Promise(async (resolve, reject) => { // I hate async programming
             db.run(createRoomSQL, [roomName, iconFilename, owner.id], async (err) => {
                 if (err) reject(err);
-                let room = await util.getRoomById(lastId)
-                let roomId = room.id + 1;
+                let room = await util.getRoomById(newID)
+                let roomID = room.id;
 
-                db.run(createMembershipSQL, [owner.id, roomId], async (err) => {
+                db.run(createMembershipSQL, [owner.id, roomID], async (err) => {
                     if (err) reject(err);
                     resolve(room);
                 });
@@ -57,7 +54,7 @@ async function isRoomNameTaken(roomName) {
 
 }
 
-async function isRoomNameValid(roomName) {
+function isRoomNameValid(roomName) {
     if(!roomName){
         return false;
     }
@@ -67,9 +64,11 @@ async function isRoomNameValid(roomName) {
     for (rule of rules) {
         if (!rule) return false;
     }
+
+    return true;
 }
 
-async function isRoomIconValid(iconFile) {
+function isRoomIconValid(iconFile) {
     if (!iconFile) {
         return true;
     }
