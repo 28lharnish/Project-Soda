@@ -36,7 +36,7 @@ app.use(session({
 }));
 app.use(cookieParser())
 
-app.use('/', express.static(__dirname + '/'));
+app.use('/public', express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 serv.listen(PORT);
@@ -78,15 +78,15 @@ io.on('connection', function (socket) {
 app.get('/', isAuthenticated, async (req, res) => {
     let ip = req.socket.remoteAddress;
     let rooms = await util.getUserRooms(req.session.user.id);
+    let members = await util.getRoomMembers(req.query.roomid);
+    let messages = await util.getMessagesByRoomId(req.query.roomid);
     let currentRoom;
     let openModal = req.query?.openmodal;
     let modalError = req.query?.modalerror;
 
     if(req.query?.roomid){
-        let room = await util.getRoomByID(req.query.roomid);
-        let members = await util.getRoomMembers(req.query.roomid);
-        let messages = await util.getMessagesByRoomID(req.query.roomid);
-        
+        let room = await util.getRoomById(req.query.roomid);
+
         currentRoom = {
             name: room.name,
             icon: room.iconfilepath,

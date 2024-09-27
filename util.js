@@ -133,14 +133,16 @@ async function getRoomByName(name) {
 
 async function getRoomMembers(roomid){
     return new Promise(async (resolve, reject) => {
-        await db.all("SELECT * FROM members WHERE roomid = ?", [roomid], (err, rows) => {
+        db.all("SELECT * FROM members WHERE roomid = ?", [roomid], (err, rows) => {
             if (err) reject(err);
-            resolve(rows);
+            db.all("SELECT * FROM USERS WHERE id IN (" + rows.map(m => "?").join(",") + ")", rows.map(m => m.userid), (err, rows) => {
+                resolve(rows);
+            });
         });
     });
 }
 
-async function getMessagesByRoomID(roomid){
+async function getMessagesByRoomId(roomid){
     return new Promise(async (resolve, reject) => {
         await db.all("SELECT * FROM messages WHERE roomid = ?", [roomid], (err, rows) => {
             if (err) reject(err);
@@ -161,6 +163,6 @@ module.exports = {
     getRoomById,
     getRoomByName,
     getRoomMembers,
-    getMessagesByRoomID,
+    getMessagesByRoomId,
     generateToken
 }
