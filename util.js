@@ -1,3 +1,4 @@
+const { resolve } = require('path');
 const config = require('./config.json');
 const sql = require('sqlite3').verbose();
 const crypto = require('crypto');
@@ -130,6 +131,24 @@ async function getRoomByName(name) {
     });
 }
 
+async function getRoomMembers(roomid){
+    return new Promise(async (resolve, reject) => {
+        await db.all("SELECT * FROM members WHERE roomid = ?", [roomid], (err, rows) => {
+            if (err) reject(err);
+            resolve(rows);
+        });
+    });
+}
+
+async function getMessagesByRoomID(roomid){
+    return new Promise(async (resolve, reject) => {
+        await db.all("SELECT * FROM messages WHERE roomid = ?", [roomid], (err, rows) => {
+            if (err) reject(err);
+            resolve(rows);
+        });
+    });
+}
+
 module.exports = {
     getUserByUsername,
     getUserByID,
@@ -141,5 +160,7 @@ module.exports = {
     getLastRoomId,
     getRoomById,
     getRoomByName,
+    getRoomMembers,
+    getMessagesByRoomID,
     generateToken
 }

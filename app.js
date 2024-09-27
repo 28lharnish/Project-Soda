@@ -78,14 +78,29 @@ io.on('connection', function (socket) {
 app.get('/', isAuthenticated, async (req, res) => {
     let ip = req.socket.remoteAddress;
     let rooms = await util.getUserRooms(req.session.user.id);
+    let currentRoom;
     let openModal = req.query?.openmodal;
     let modalError = req.query?.modalerror;
 
-    console.log(rooms);
+    if(req.query?.roomid){
+        let room = await util.getRoomByID(req.query.roomid);
+        let members = await util.getRoomMembers(req.query.roomid);
+        let messages = await util.getMessagesByRoomID(req.query.roomid);
+        
+        currentRoom = {
+            name: room.name,
+            icon: room.iconfilepath,
+            members: members,
+            messages: messages
+        }
+    
+    }
 
     res.render('main', {
         user: req.session.user, 
         rooms: rooms,
+        currentRoom: currentRoom,
+        messages: messages,
         openModal: openModal,
         modalError: modalError,
         cfg: config
