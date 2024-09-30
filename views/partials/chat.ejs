@@ -1,19 +1,36 @@
 <style>
-    #chat {}
+    #chat {
 
-    #chat-box {
+        display: flex;
+        flex-direction: column;
+        height: 85vh;
+
+    }
+
+    #messages-box {
+        background-color: green;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+
+    #chat-ui {
         width: 100%;
-        height: 45px;
+        height: 60px;
+        background-color: red;
+        align-items: center;
         padding: 10px;
-        border: 2px solid #007BFF;
-        border-radius: 5px;
+    }
+
+    #message-textbox {
+        width: 80%;
+        height: 100%;
+        padding: 20px;
         resize: none;
+        border-radius: 5px;
         font-size: 16px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     #send-btn {
-        margin-top: 10px;
         padding: 10px 20px;
         border: none;
         border-radius: 5px;
@@ -29,10 +46,24 @@
         </center>
         <% } else { %>
             <%= currentRoom.members[0].username %>
-                <% } %>
 
-                    <textarea id="chat-box" resizeable="false"></textarea>
-                    <button id="send-btn">Send</button>
-                    <script src="/socket.io/socket.io.min.js"></script>
-                    <script src="/public/js/chat.js"></script>
+            <div id="messages-box">
+                <% currentRoom.messages.forEach(message => { %>
+                    <div>
+                        <strong><%= message.sender.username %></strong>
+                        <p><%= message.text %></p>
+                    </div>
+                <% }) %>
+            </div>
+
+            <div id="chat-ui">
+                <textarea id="message-textbox" resizeable="false"></textarea>
+                <button id="send-btn">Send</button>
+                <script src="/socket.io/socket.io.min.js"></script>
+                <script src="/public/js/chat.js"></script>
+            </div>
+
+        <% } %>
+
+
 </div>
