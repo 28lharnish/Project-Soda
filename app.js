@@ -11,7 +11,8 @@ const bcrypt = require('bcrypt');
 const sanitize = require('sanitize');
 const serv = require('http').Server(app);
 const registerLogin = require('./registerlogin');
-const rooms = require('./rooms.js');
+const roomCreation = require('./roomCreation');
+const chat = require('./chat');
 const util = require('./util');
 
 const PORT = 3000;
@@ -70,6 +71,13 @@ const io = require('socket.io')(serv);
 io.on('connection', function (socket) {
     let ip = socket.handshake.address;
 
+    socket.on('message', async function (data) {
+        let messageData = {
+            roomid: data.roomid,
+            //stuff
+        }
+    });
+
     socket.on('disconnect', function () {
 
     });
@@ -79,7 +87,7 @@ app.get('/', isAuthenticated, async (req, res) => {
     let ip = req.socket.remoteAddress;
     let rooms = await util.getUserRooms(req.session.user.id);
     let members = await util.getRoomMembers(req.query.roomid);
-    let messages = await util.getMessagesByRoomId(req.query.roomid);
+    let messages = await chat.getMessagesByRoomId(req.query.roomid);
     let currentRoom;
     let openModal = req.query?.openmodal;
     let modalError = req.query?.modalerror;
@@ -88,11 +96,14 @@ app.get('/', isAuthenticated, async (req, res) => {
         let room = await util.getRoomById(req.query.roomid);
 
         currentRoom = {
+            id: room.id,
             name: room.name,
             icon: room.iconfilepath,
             members: members,
             messages: messages
         }
+
+        req.session.currentRoom = currentRoom;
     
     }
 
@@ -216,7 +227,7 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
         iconFile: iconFile
     }
 
-    let error = await rooms.isRoomDataValid(formData);
+    let error = await roomCreation.isRoomDataValid(formData);
 
     console.log(error);
 
@@ -225,8 +236,8 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
         return;
     }
 
-    rooms.createNewRoom(formData).then(room => {
-        res.redirect("/");
+    roomCreation.createNewRoom(formData).then(room => {
+        res.redirect(`/?roomid=${room.id}`);
     });
 
 });

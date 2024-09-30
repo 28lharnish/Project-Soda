@@ -16,5 +16,9 @@
         "maxRoomnameLength": 30,
         "maxIconFileSize": 5000000,
         "allowedIconFileFormats": ["jpeg", "png", "webp", "jfif"]
+    },
+    "messageRequirements": {
+        "minMessageLength": 1,
+        "maxMessageLength": 1000
     }
 }
