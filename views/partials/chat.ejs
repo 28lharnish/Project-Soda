@@ -47,16 +47,9 @@
             <%= currentRoom.members[0].username %>
 
                 <div id="messages-box">
-                    <% currentRoom.messages.forEach(message=> { %>
-                        <div>
-                            <strong>
-                                <%= message.sender.username %>
-                            </strong>
-                            <p>
-                                <%= message.text %>
-                            </p>
-                        </div>
-                        <% }) %>
+                    <% messages.forEach(message => { %>
+                        <%- include('./message.ejs') %> 
+                    <% }) %>
                 </div>
 
                 <div id="chat-ui">
@@ -74,14 +67,28 @@
     const socket = io();
     let messageBox = document.getElementById('message-textbox');
 
+    socket.io.on('message', (data) => {
+        alert(message.text);
+    });
+
     function sendMessage() {
         let messageText = messageBox.value;
         messageBox.value = '';
         socket.emit('message', {
             text: messageText,
             timestamp: new Date().toISOString(),
-            roomid: "<%= locals?.currentRoom.id %>",
-            senderid: "<%= user.id %>",
+            roomid: "<%= currentRoom?.id %>",
+            senderid: "<%= user.id %>"
         });
+    }
+
+    function addMessage(text, username, timestamp){
+        let msgHtml = `<%- include('./message.ejs') %>`;
+        //this is highly stupid but the squad wants project soda so I need to finish as fast as possible
+        msgHtml.replace("MESSAGE", text);
+        msgHtml.replace("USERNAME", username);
+        msgHtml.replace("TIMESTAMP", timestamp);
+
+        document.getElementById('messages-box').innerHTML += msgHtml;
     }
 </script>

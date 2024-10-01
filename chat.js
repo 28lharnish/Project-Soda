@@ -6,7 +6,15 @@ async function getMessagesByRoomId(roomid){
     return new Promise(async (resolve, reject) => {
         await db.all("SELECT * FROM messages WHERE roomid = ?", [roomid], (err, rows) => {
             if (err) reject(err);
-            resolve(rows);
+            db.all("SELECT * FROM users WHERE id IN (" + rows.map(r => '?').join(',')+")",rows.map(r => r.senderid), (err, users) => {
+                if(err) reject(err);
+                for(row in rows){ // it ok
+                    let user = users.find(user => user.id == rows[row].senderid);
+                    rows[row].sender = user;
+                    console.log(rows[row]);
+                }
+                resolve(rows);
+            });
         });
     });
 }
@@ -20,13 +28,13 @@ async function getLastMessageId(roomid){
     });
 }
 
-async function createNewMessage(messageData){
+async function createNewMessage(text, timestamp, roomid, senderid){
     return new Promise((resolve, reject) => {
-        let createMessageSQL = `INSERT INTO messages (roomid, senderid, content) VALUES (?, ?, ?)`;
+        let createMessageSQL = `INSERT INTO messages (text, timestamp, roomid, senderid) VALUES (?, ?, ?, ?)`;
         // bad code don't care just tryna get this done so I can go back to shapes that go
-        db.run(createMessageSQL, [messageData.roomid, messageData.senderid, messageData.content], async (err) => {
+        db.run(createMessageSQL, [text, timestamp, roomid, senderid], async (err) => {
             if(err) reject(err);
-            let lastId = await getLastMessageId(messageData.roomid);
+            let lastId = await getLastMessageId(roomid);
             db.get("SELECT * FROM messages WHERE id = ?", [lastId], (err, row) => {
                 if(err) reject(err);
                 resolve(row);

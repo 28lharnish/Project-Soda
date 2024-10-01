@@ -72,10 +72,9 @@ io.on('connection', function (socket) {
     let ip = socket.handshake.address;
 
     socket.on('message', async function (data) {
-        let messageData = {
-            roomid: data.roomid,
-            //stuff
-        }
+        chat.createNewMessage(data.text, data.timestamp, data.roomid, data.senderid).then(message => {
+            io.emit('message', message);
+        });
     });
 
     socket.on('disconnect', function () {
@@ -88,6 +87,8 @@ app.get('/', isAuthenticated, async (req, res) => {
     let rooms = await util.getUserRooms(req.session.user.id);
     let members = await util.getRoomMembers(req.query.roomid);
     let messages = await chat.getMessagesByRoomId(req.query.roomid);
+
+
     let currentRoom;
     let openModal = req.query?.openmodal;
     let modalError = req.query?.modalerror;
@@ -102,8 +103,6 @@ app.get('/', isAuthenticated, async (req, res) => {
             members: members,
             messages: messages
         }
-
-        req.session.currentRoom = currentRoom;
     
     }
 
