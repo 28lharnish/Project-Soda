@@ -1,4 +1,4 @@
-<div class="message">
-    <strong>USERNAME</strong>
-    <p>MESSAGE</p>
+<div class="message" <%= you ? "you" : "" %>>
+    <strong><%= username %></strong>&nbsp;<strong><i><%= timestamp %></i>
+    <p><%= message %></p>
 </div>

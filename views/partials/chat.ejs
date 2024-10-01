@@ -36,6 +36,18 @@
         cursor: pointer;
         font-size: 16px;
     }
+
+    .message {
+        background-color: white;
+        width: fit-content;
+        padding: 10px;
+        margin: 20px;
+        border-radius: 20px;
+        position: relative;
+        left: 10px;
+    }
+
+    .message[you] {}
 </style>
 
 <div id="chat">
@@ -47,14 +59,21 @@
             <%= currentRoom.members[0].username %>
 
                 <div id="messages-box">
-                    <% messages.forEach(message => { %>
-                        <%- include('./message.ejs') %> 
-                    <% }) %>
+                    <% messages.forEach(message=> { %>
+                        <%- include('./message.ejs', {
+                            username: message.sender.username,
+                            message: message.text,
+                            timestamp: new Date(message.timestamp).toLocaleString(),
+                            you: (message.sender.id===user.id)
+                        }) %>
+                     <% }) %>
                 </div>
 
                 <div id="chat-ui">
                     <!-- long line moment-->
-                    <textarea id="message-textbox" resizeable="false" maxlength="<%= cfg.messageRequirements.maxMessageLength %>" minlength="maxlength="<%= cfg.messageRequirements.minMessageLength %>""></textarea>
+                    <textarea id="message-textbox" resizeable="false"
+                        maxlength="<%= cfg.messageRequirements.maxMessageLength %>" minlength="maxlength="
+                        <%=cfg.messageRequirements.minMessageLength %>""></textarea>
                     <button id="send-btn" onclick="sendMessage()">Send</button>
                 </div>
 
@@ -64,6 +83,9 @@
 </div>
 <script src="/socket.io/socket.io.min.js"></script>
 <script>
+
+    document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight
+
     const socket = io();
     let messageBox = document.getElementById('message-textbox');
 
@@ -80,15 +102,11 @@
             roomid: "<%= currentRoom?.id %>",
             senderid: "<%= user.id %>"
         });
+
+        window.location.reload();
     }
 
-    function addMessage(text, username, timestamp){
-        let msgHtml = `<%- include('./message.ejs') %>`;
-        //this is highly stupid but the squad wants project soda so I need to finish as fast as possible
-        msgHtml.replace("MESSAGE", text);
-        msgHtml.replace("USERNAME", username);
-        msgHtml.replace("TIMESTAMP", timestamp);
+    function addMessage(text, username, timestamp) {
 
-        document.getElementById('messages-box').innerHTML += msgHtml;
     }
 </script>
