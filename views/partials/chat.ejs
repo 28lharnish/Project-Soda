@@ -4,13 +4,13 @@
         display: flex;
         flex-direction: column;
         height: 85vh;
-
     }
 
     #messages-box {
-        background-color: green;
+        background-color: teal;
         flex-grow: 1;
         overflow-y: auto;
+        overflow-x: hidden;
     }
 
     #chat-ui {
@@ -47,10 +47,29 @@
         left: 10px;
     }
 
-    .message[you] {}
+    .message[you] {
+        background-color: lightblue;
+        position: relative;
+        left: 90%;
+        transform: translateX(-90%);
+    }
+
+    .message-pfp {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+
+    .message-pfp[you] {
+        display: none;
+    }
+
+    .message-timestamp[you] {
+        display: none;
+    }
 </style>
 
-<div id="chat">
+<div id="chat" onload="load()">
     <% if (!locals?.currentRoom) {%>
         <center>
             <h1>nopers</h1>
@@ -61,10 +80,9 @@
                 <div id="messages-box">
                     <% messages.forEach(message=> { %>
                         <%- include('./message.ejs', {
-                            username: message.sender.username,
+                            sender: message.sender,
                             message: message.text,
                             timestamp: new Date(message.timestamp).toLocaleString(),
-                            you: (message.sender.id===user.id)
                         }) %>
                      <% }) %>
                 </div>
@@ -84,7 +102,10 @@
 <script src="/socket.io/socket.io.min.js"></script>
 <script>
 
-    document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight
+    function load(){
+        let messages = document.getElementsByClassName('message');
+        messages[messages.length-1].scrollIntoView();
+    }
 
     const socket = io();
     let messageBox = document.getElementById('message-textbox');

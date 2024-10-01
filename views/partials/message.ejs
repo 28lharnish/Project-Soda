@@ -1,4 +1,6 @@
-<div class="message" <%= you ? "you" : "" %>>
-    <strong><%= username %></strong>&nbsp;<strong><i><%= timestamp %></i>
+<% let isYou = (sender.id===user.id) ? "you" : "" %>
+
+<div class="message" <%= isYou %>>
+    <img class='message-pfp' src='<%= sender.pfpfilename %>' <%= isYou %>><strong class='message-username' <%= isYou %>><%= isYou ? "You" : sender.username %></strong class='message-timestamp' <%= isYou %>>&nbsp;<strong><i><%= timestamp %></i>
     <p><%= message %></p>
 </div>
