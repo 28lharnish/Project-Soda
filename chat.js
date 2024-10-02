@@ -4,7 +4,7 @@ let db = new sql.Database('db/database.db');
 
 async function getMessagesByRoomId(roomid){
     return new Promise(async (resolve, reject) => {
-        await db.all("SELECT * FROM messages WHERE roomid = ?", [roomid], (err, rows) => {
+        await db.all("SELECT * FROM messages WHERE roomid = ? ORDER BY id DESC LIMIT ?", [roomid, config.messageLoadLimit], (err, rows) => {
             if (err) reject(err);
             db.all("SELECT * FROM users WHERE id IN (" + rows.map(r => '?').join(',')+")",rows.map(r => r.senderid), (err, users) => {
                 if(err) reject(err);

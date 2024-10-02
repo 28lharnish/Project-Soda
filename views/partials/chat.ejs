@@ -7,7 +7,7 @@
     }
 
     #messages-box {
-        background-color: teal;
+        background-color: var(--mo);
         flex-grow: 1;
         overflow-y: auto;
         overflow-x: hidden;
@@ -16,7 +16,7 @@
     #chat-ui {
         width: 100%;
         height: 100px;
-        background-color: red;
+        background-color: var(--modal-bg-color);
         padding: 10px;
     }
 
@@ -55,9 +55,9 @@
     }
 
     .message-pfp {
-        width: 40px;
+        /*width: 40px;
         height: 40px;
-        border-radius: 50%;
+        border-radius: 50%;*/
     }
 
     .message-pfp[you] {
@@ -75,73 +75,79 @@
 
 <div id="chat">
     <% if (locals?.currentRoom) { %>
-            <button id="people-btn" onclick="showModal('roomMembers')">Members</button>
+        <button id="people-btn" onclick="showModal('roomMembers')">Members</button>
 
-                <div id="messages-box" onload="scrollToBottom()">
-                    <% messages.forEach(message=> {  %>
-                        <% let msgHtml = include('./message.ejs') %>
-                        <% let senderUsername = message.sender.username %>
-                        <% let pfpFilePath = message.sender.pfpfilename %>
-                        <% let messageText = message.text %>
-                        <% let timestamp = new Date(message.timestamp).toLocaleString() %>
-                        <% let isYou = message.sender.id === user.id %>
-                        <% // I know. I hate it too but there is no time to find a better way and I do not want to have it refresh everytime there is a new message%>
-                        <% if(!isYou) msgHtml = msgHtml.replace("you", "") %>
-                        <%- msgHtml.replace("PFPFILEPATH", pfpFilePath).replace("SENDERUSERNAME", senderUsername).replace("MESSAGETEXT", messageText).replace("TIMESTAMP", timestamp) %>
-                     <% }) %>
-                </div>
+        <div id="messages-box" onload="scrollToBottom()">
+            <% currentRoom.messages.reverse() %>
+            <% currentRoom.messages.forEach(message=> { %>
+                <% let msgHtml=include('./message.ejs') %>
+                <% let senderUsername=message.sender.username; %>
+                <% let pfpFilePath=message.sender.pfpfilename; %>
+                <% let messageText=message.text; %>
+                <% let timestamp=new Date(message.timestamp).toLocaleString(); %>
+                <% let isYou=message.sender.id===user.id; %>
+                <% // I know. I hate it too but there is no time to find a better way and I do not want to have it refresh everytime there is a new message%>
+                <% if(!isYou) msgHtml=msgHtml.replace("you", "" ); %>
+                <%- msgHtml.replace("PFPFILEPATH",pfpFilePath).replace("SENDERUSERNAME", isYou ? "You" :senderUsername).replace("MESSAGETEXT",messageText).replace("TIMESTAMP", timestamp); %>
+            <% }) %>
+        </div>
 
-                <div id="chat-ui">
-                    <!-- long line moment-->
-                    <textarea id="message-textbox" resizeable="false"
-                        maxlength="<%= cfg.messageRequirements.maxMessageLength %>" minlength="maxlength=
-                        <%=cfg.messageRequirements.minMessageLength %>"></textarea>
-                    <button id="send-btn" onclick="sendMessage()">Send</button>
-                </div>
+        <div id="chat-ui">
+            <!-- long line moment-->
+            <textarea id="message-textbox" resizeable="false"
+                maxlength="<%= cfg.messageRequirements.maxMessageLength %>"
+                minlength="<%=cfg.messageRequirements.minMessageLength %>"></textarea>
+            <button id="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+
+        <script src="/socket.io/socket.io.min.js"></script>
+
+        <script>
+
+            window.onload = scrollToBottom;
+
+            const socket = io();
+            let messageBox = document.getElementById('message-textbox');
+            let messagesContainer = document.getElementById('messages-box');
+
+            socket.on('message', (message) => {
+                if(message.roomid == "<%= currentRoom.id %>") {
+                    addMessage(message.text, message.timestamp, message.sender);
+                }
+            });
+
+            function scrollToBottom() {
+                let scrollHeight = messagesContainer.scrollHeight
+                messagesContainer.scrollTop = scrollHeight;
+            }
+
+            function sendMessage() {
+                let message = {
+                    text: messageBox.value,
+                    timestamp: new Date().toISOString(),
+                    roomid: "<%= currentRoom?.id %>",
+                    senderid: "<%= user.id %>"
+                }
+
+                messageBox.value = "";
+
+                socket.emit('message', message);
+            }
+
+            function addMessage(text, timestamp, sender) {
+                let msgHtml = `<%- include('./message.ejs'); %>`;
+                let isYou = sender.id == "<%= user.id %>";
+                let convertedTimestamp = new Date(timestamp).toLocaleString();
+                //I hate this just as much as you do
+                if (!isYou) msgHtml = msgHtml.replace("you", "");
+                msgHtml = msgHtml.replace("PFPFILEPATH", sender.pfpfilename).replace("SENDERUSERNAME", isYou ? "You" : sender.username).replace("MESSAGETEXT", text).replace("TIMESTAMP", convertedTimestamp);
+                messagesContainer.innerHTML += msgHtml;
+                scrollToBottom();
+            }
+            
+        </script>
 
         <% } %>
 
 
 </div>
-<script src="/socket.io/socket.io.min.js"></script>
-<script>
-
-    window.onload = scrollToBottom;
-
-    const socket = io();
-    let messageBox = document.getElementById('message-textbox');
-    let messagesContainer = document.getElementById('messages-box');
-
-    socket.io.on('message', (data) => {
-        alert(message.text);
-    });
-
-    function scrollToBottom(){
-        let scrollHeight = messagesContainer.scrollHeight
-        messagesContainer.scrollTop = scrollHeight;
-    }
-
-    function sendMessage() {
-        let message = {
-            text: messageBox.value,
-            timestamp: new Date().toISOString(),
-            roomid: "<%= currentRoom?.id %>",
-            senderid: "<%= user.id %>"
-        }
-
-        messageBox.value = "";
-
-        socket.emit('message', message);
-
-        addMessage(message.text, message.timestamp, "<%= user.id %>","<%= user.username %>", "<%= user.pfpfilename %>");
-    }
-
-    function addMessage(text, timestamp, senderid, senderUsername, senderPfpFilename) {
-        let msgHtml = `<%- include('./message.ejs'); %>`;
-        let isYou = senderid === "<%= user.id %>";
-        //I hate this just as much as you do
-        msgHtml = msgHtml.replace("PFPFILEPATH", senderPfpFilename).replace("SENDERUSERNAME", senderUsername).replace("MESSAGETEXT", text).replace("TIMESTAMP", new Date(timestamp).toISOString());
-        messagesContainer.innerHTML += msgHtml;
-        scrollToBottom();
-    }
-</script>

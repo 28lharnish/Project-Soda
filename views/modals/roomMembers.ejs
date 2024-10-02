@@ -22,7 +22,7 @@
         margin-left: 20px;
     }
 </style>
-
+<% if(locals?.currentRoom) { %>
 <div class="modal-box" id="roommembers">
     <h2>Room Members</h2>
     <br>
@@ -53,10 +53,13 @@
             <% }) %>
         </table>
     </div>
-    <form action="/addmember" method="post" id="add-member-form">
-        <input type="hidden" name="roomid" value="<%= currentRoom?.id %>">
-        <input type="text" name="username" placeholder="Username">
-        <p class="modal-error"></p>
-        <button type="submit">Add Member</button>
-    </form>
+    <% if(user.id == currentRoom?.owner.id) { %>
+        <form action="/addmember" method="post" id="add-member-form">
+            <input type="hidden" name="roomid" value="<%= currentRoom?.id %>">
+            <input type="text" name="username" placeholder="Username">
+            <p class="modal-error"></p>
+            <button type="submit">Add Member</button>
+        </form>
+    <% } %>
 </div>
+<% } %>

@@ -1,5 +1,6 @@
 {
     "saltRounds": 10,
+    "messageLoadLimit": 20,
     "pfpUploadPath": "/public/uploads/pfp/",
     "iconUploadPath": "/public/uploads/icon/",
     "defaultPfp": "/public/img/STEVEN.png",

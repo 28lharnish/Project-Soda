@@ -72,7 +72,14 @@ io.on('connection', function (socket) {
     let ip = socket.handshake.address;
 
     socket.on('message', async function (data) {
-        chat.createNewMessage(data.text, data.timestamp, data.roomid, data.senderid).then(message => {
+        let members = await util.getRoomMembers(data.roomid);
+
+        if(!members.find(m => m.id == data.senderid)){
+            return;
+        }
+
+        chat.createNewMessage(data.text, data.timestamp, data.roomid, data.senderid).then(async message => {
+            message.sender = await util.getUserByID(data.senderid);
             io.emit('message', message);
         });
     });
@@ -88,8 +95,6 @@ app.get('/', isAuthenticated, async (req, res) => {
 
     let ip = req.socket.remoteAddress;
     let rooms = await util.getUserRooms(req.session.user.id);
-    let members = await util.getRoomMembers(req.query.roomid);
-    let messages = await chat.getMessagesByRoomId(req.query.roomid);
 
 
     let currentRoom;
@@ -97,7 +102,18 @@ app.get('/', isAuthenticated, async (req, res) => {
     let modalError = req.query?.modalerror;
 
     if(req.query?.roomid){
+
+        let members = await util.getRoomMembers(req.query?.roomid);
+
+        console.log(members);
+
+        if(!members.find(m => m.id == req.session.user.id)){
+            res.send("You do not have access to this room, buddy");
+            return;
+        }
+
         let room = await util.getRoomById(req.query.roomid);
+        let messages = await chat.getMessagesByRoomId(req.query.roomid);
         let owner = await util.getUserByID(room.ownerid);
 
         currentRoom = {
@@ -108,14 +124,23 @@ app.get('/', isAuthenticated, async (req, res) => {
             members: members,
             messages: messages
         }
+
+        res.render('main', {
+            user: req.session.user, 
+            rooms: rooms,
+            currentRoom: currentRoom,
+            openModal: openModal,
+            modalError: modalError,
+            cfg: config
+        });
+
+        return;
     
     }
 
     res.render('main', {
         user: req.session.user, 
         rooms: rooms,
-        currentRoom: currentRoom,
-        messages: messages,
         openModal: openModal,
         modalError: modalError,
         cfg: config
@@ -238,6 +263,7 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
 
     if(error){
         let redirectUrl = util.addParamsToURL(referer, {openmodal: "createRoom", modalerror: error});
+        console.log(`redirecting to ${redirectUrl}`);
         res.redirect(redirectUrl);
         return;
     }
@@ -259,46 +285,56 @@ app.post("/addmember", async (req, res) => {
 
     let room = await util.getRoomById(roomid);
     let user = await util.getUserByUsername(username);
-
-    console.log("ADDING MEMBER");
+    let members = await util.getRoomMembers(roomid);
 
     let error;
 
-    if(!room) {
-        console.log("Room not found");
-        // bad bad I hate it but it worky
-        res.redirect(`/?roomid=${roomid}&openmodal=roomMembers&modalerror=Room not found`);
-        return;
-    }
-
     if(!user){
-        let redirectUrl = util.addParamsToURL(referer, {openmodal: "createRoom", modalerror: error});
-        console.log("User not found");
-        res.redirect(`/?roomid=${roomid}&openmodal=roomMembers&modalerror=User not found`);
-        return;
+        error = "User does not exist";
+    } else if(!room) {
+        error = "Room does not exist";
+    } else if(members.find(m => m.id === user.id)){
+        error = "User already in room, goober";
+    } else if(room.ownerid != req.session.user.id){
+        error = "bruh";
     }
 
     if(error){
-        //DO THIS
-    }
-
-    if(room.ownerid != req.session.user.id){
-        console.log("bruh");
-        res.send("bruh");
+        let redirectUrl = util.addParamsToURL(referer, {openmodal: "roomMembers", modalerror: error});
+        console.log(`redirecting to ${redirectUrl}`);
+        res.redirect(redirectUrl);
         return;
     }
 
     util.addRoomMember(roomid, user.id).then(() => {
-        res.redirect(`/?roomid=${roomid}`);
+        res.redirect(`/?roomid=${roomid}&openmodal=roommembers`);
     });
 });
 
-app.post("/kickmember", (req, res) => {
+app.post("/kickmember", async (req, res) => {
+    const referer = req.get('Referer');
     let roomid = req.body?.roomid;
     let userid = req.body?.userid;
 
-    util.removeMemberFromRoom(roomid, userid).then(() => {
-        res.redirect(req.originalUrl);
+    let room = await util.getRoomById(roomid);
+
+    let error;
+
+    if(!roomid || !userid) {
+        error = "Failed to kick user";
+    } else if(room.ownerid != req.session.user.id){
+        error = "bruh";
+    }
+
+    if(error){
+        let redirectUrl = util.addParamsToURL(referer, {openmodal: "roomMembers", modalerror: error});
+        console.log(`redirecting to ${redirectUrl}`);
+        res.redirect(redirectUrl);
+        return;
+    } 
+
+    util.removeRoomMember(roomid, userid).then(() => {
+        res.redirect(referer);
     });
 });
 

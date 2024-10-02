@@ -15,8 +15,10 @@ function addParamsToURL(urlString, params){
     let urlParams = url.searchParams;
 
     for (const [key, value] of Object.entries(params)) {
-        if (!searchParams.has(key)) {
-            searchParams.append(key, value);
+        if (!urlParams.has(key)) {
+            urlParams.append(key, value);
+        } else if(urlParams.has(key)){
+            urlParams.set(key, value);
         }
     }
 
@@ -188,5 +190,6 @@ module.exports = {
     getRoomByName,
     getRoomMembers,
     addRoomMember,
+    removeRoomMember,
     generateToken
 }
