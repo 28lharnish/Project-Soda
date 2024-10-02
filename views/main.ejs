@@ -88,8 +88,14 @@
     </div>
 
     <script>
+
+        //you are so sus
+        //I am not sus
+        //I am so skibidi sus
+
         let modals = {
-            createroom: `<%- include('./modals/createroom.ejs') %>`
+            createRoom: `<%- include('./modals/createRoom.ejs') %>`,
+            roomMembers: `<%- include('./modals/roomMembers.ejs') %>`,
         };
 
         <% if (locals?.openModal) { %>
@@ -97,7 +103,7 @@
         <% } %>
 
         function showModal(modal) {
-            document.getElementById('modal-content').innerHTML = modal;
+            document.getElementById('modal-content').innerHTML = modals[modal];
             document.getElementById('modal').style.display = 'block';
         }
 

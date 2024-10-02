@@ -67,6 +67,10 @@
     .message-timestamp[you] {
         display: none;
     }
+
+    #people-btn {
+        width: fit-content;
+    }
 </style>
 
 <div id="chat" onload="load()">
@@ -75,7 +79,7 @@
             <h1>nopers</h1>
         </center>
         <% } else { %>
-            <%= currentRoom.members[0].username %>
+            <button id="people-btn" onclick="showModal('roomMembers')">Members</button>
 
                 <div id="messages-box">
                     <% messages.forEach(message=> { %>

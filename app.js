@@ -95,11 +95,13 @@ app.get('/', isAuthenticated, async (req, res) => {
 
     if(req.query?.roomid){
         let room = await util.getRoomById(req.query.roomid);
+        let owner = await util.getUserByID(room.ownerid);
 
         currentRoom = {
             id: room.id,
             name: room.name,
             icon: room.iconfilepath,
+            owner: owner,
             members: members,
             messages: messages
         }
@@ -236,6 +238,7 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
     }
 
     roomCreation.createNewRoom(formData).then(room => {
+        console.log(room);
         res.redirect(`/?roomid=${room.id}`);
     });
 

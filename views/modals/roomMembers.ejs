@@ -1,0 +1,44 @@
+<style>
+
+    .star {
+        color: yellow;
+    }
+
+    .member-pfp {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+</style>
+
+<div class="modal-box">
+    <h2>Room Members</h2>
+    <br>
+    <div id="roomMembers">
+        <table>
+            <% currentRoom.members.forEach(member => { %>
+                <% member.isRoomOwner = (member.id === currentRoom.owner.id) %>
+                <tr>
+                    <td>
+                        <img class='member-pfp' src="<%= member.pfpfilename %>">
+                    </td>
+                    <td>
+                        <p><%= member.username %></p>
+                    </td>
+                    <td>
+                        <%- member.isRoomOwner ? "<p class='star'>&#9733</p>" : "" %>
+                    </td>
+                    <% if (!member.isRoomOwner && member.id !== user.id) { %>
+                        <td>
+                            <form action="/kick" method="post">
+                                <input type="hidden" name="roomid" value="<%= currentRoom.id %>">
+                                <input type="hidden" name="userid" value="<%= member.id %>">
+                                <button type="submit">Kick</button>
+                            </form>
+                        </td>
+                    <% } %>
+                </tr>
+            <% }) %>
+        </table>
+    </div>
+</div>
