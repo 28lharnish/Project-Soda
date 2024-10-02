@@ -110,15 +110,15 @@
 
     const socket = io();
     let messageBox = document.getElementById('message-textbox');
+    let messagesContainer = document.getElementById('messages-box');
 
     socket.io.on('message', (data) => {
         alert(message.text);
     });
 
     function scrollToBottom(){
-        let messagesBox = document.getElementById('messages-box');
-        let scrollHeight = messagesBox.scrollHeight
-        messagesBox.scrollTop = scrollHeight;
+        let scrollHeight = messagesContainer.scrollHeight
+        messagesContainer.scrollTop = scrollHeight;
     }
 
     function sendMessage() {
@@ -128,12 +128,19 @@
             roomid: "<%= currentRoom?.id %>",
             senderid: "<%= user.id %>"
         }
+
+        messageBox.value = "";
+
         socket.emit('message', message);
 
-        addMessage
+        addMessage(message.text, message.timestamp, "<%= user.id %>","<%= user.username %>", "<%= user.pfpfilename %>");
     }
 
-    function addMessage(text, username, timestamp) {
-
+    function addMessage(text, timestamp, senderid, senderUsername, senderPfpFilename) {
+        let msgHtml = `<%- include('./message.ejs'); %>`;
+        let isYou = senderid === "<%= user.id %>";
+        msgHtml = msgHtml.replace("PFPFILEPATH", senderPfpFilename).replace("SENDERUSERNAME", senderUsername).replace("MESSAGETEXT", text).replace("TIMESTAMP", timestamp);
+        messagesContainer.innerHTML += msgHtml;
+        scrollToBottom();
     }
 </script>

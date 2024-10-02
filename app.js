@@ -157,7 +157,6 @@ app.post('/login', async (req, res) => {
     }
 
     await util.getUserByUsername(formData.username).then(async user => {
-        console.log(user);
         let token = util.generateToken();
         req.session.user = user;
 
@@ -247,11 +246,27 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
 
 });
 
-app.post("/addmember", (req, res) => {
+app.post("/addmember", async (req, res) => {
     let roomid = req.body?.roomid;
     let username = req.body?.username;
 
-    util.addMemberToRoom(roomid, username).then(() => {
+    let room = await util.getRoomById(roomid);
+
+    console.log("ADDING MEMBER");
+
+    if(!room) {
+        res.send("Room not found");
+        console.log("Room not found");
+        return;
+    }
+
+    if(room.ownerid != req.session.user.id){
+        res.send("bruh");
+        console.log("bruh");
+        return;
+    }
+
+    util.addRoomMember(roomid, username).then(() => {
         res.redirect(`/?roomid=${roomid}`);
     });
 });

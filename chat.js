@@ -11,7 +11,6 @@ async function getMessagesByRoomId(roomid){
                 for(row in rows){ // it ok
                     let user = users.find(user => user.id == rows[row].senderid);
                     rows[row].sender = user;
-                    console.log(rows[row]);
                 }
                 resolve(rows);
             });
