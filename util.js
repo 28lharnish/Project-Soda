@@ -151,6 +151,15 @@ async function addRoomMember(roomid, userid){
     });
 }
 
+async function removeRoomMember(roomid, userid){
+    return new Promise(async (resolve, reject) => {
+        db.run("DELETE FROM members WHERE roomid = ? AND userid = ?", [roomid, userid], (err) => {
+            if (err) reject(err);
+            resolve();
+        });
+    });
+}
+
 module.exports = {
     getUserByUsername,
     getUserByID,

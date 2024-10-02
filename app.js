@@ -83,6 +83,9 @@ io.on('connection', function (socket) {
 });
 
 app.get('/', isAuthenticated, async (req, res) => {
+
+    console.log(req.originalUrl);
+
     let ip = req.socket.remoteAddress;
     let rooms = await util.getUserRooms(req.session.user.id);
     let members = await util.getRoomMembers(req.query.roomid);
@@ -248,12 +251,18 @@ app.post("/addmember", (req, res) => {
     let roomid = req.body?.roomid;
     let username = req.body?.username;
 
-    // add checking
-
     util.addMemberToRoom(roomid, username).then(() => {
         res.redirect(`/?roomid=${roomid}`);
     });
-}
-));
+});
+
+app.post("/kickmember", (req, res) => {
+    let roomid = req.body?.roomid;
+    let userid = req.body?.userid;
+
+    util.removeMemberFromRoom(roomid, userid).then(() => {
+        res.redirect(req.originalUrl);
+    });
+});
 
 //  merry christmas you filthy animal - kevin mcallister 1990 - home alone 2 lost in new york - 1992 - john hughes - chris columbus - macaulay culkin - joe pesci - daniel stern - catherine o'hara - john heard - tim curry - rob schneider - brenda fricker - eddie bracken - dana ivey

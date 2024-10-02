@@ -73,43 +73,40 @@
     }
 </style>
 
-<div id="chat" onload="load()">
-    <% if (!locals?.currentRoom) {%>
-        <center>
-            <h1>nopers</h1>
-        </center>
-        <% } else { %>
+<div id="chat">
+    <% if (locals?.currentRoom) { %>
             <button id="people-btn" onclick="showModal('roomMembers')">Members</button>
 
-                <div id="messages-box">
-                    <% messages.forEach(message=> { %>
-                        <%- include('./message.ejs', {
-                            sender: message.sender,
-                            message: message.text,
-                            timestamp: new Date(message.timestamp).toLocaleString(),
-                        }) %>
+                <div id="messages-box" onload="scrollToBottom()">
+                    <% messages.forEach(message=> {  %>
+                        <% let msgHtml = include('./message.ejs') %>
+                        <% let senderUsername = message.sender.username %>
+                        <% let pfpFilePath = message.sender.pfpfilename %>
+                        <% let messageText = message.text %>
+                        <% let timestamp = new Date(message.timestamp).toLocaleString() %>
+                        <% let isYou = message.sender.id === user.id %>
+                        <% // I know. I hate it too but there is no time to find a better way and I do not want to have it refresh everytime there is a new message%>
+                        <% if(!isYou) msgHtml = msgHtml.replace("you", "") %>
+                        <%- msgHtml.replace("PFPFILEPATH", pfpFilePath).replace("SENDERUSERNAME", senderUsername).replace("MESSAGETEXT", messageText).replace("TIMESTAMP", timestamp) %>
                      <% }) %>
                 </div>
 
                 <div id="chat-ui">
                     <!-- long line moment-->
                     <textarea id="message-textbox" resizeable="false"
-                        maxlength="<%= cfg.messageRequirements.maxMessageLength %>" minlength="maxlength="
-                        <%=cfg.messageRequirements.minMessageLength %>""></textarea>
+                        maxlength="<%= cfg.messageRequirements.maxMessageLength %>" minlength="maxlength=
+                        <%=cfg.messageRequirements.minMessageLength %>"></textarea>
                     <button id="send-btn" onclick="sendMessage()">Send</button>
                 </div>
 
-                <% } %>
+        <% } %>
 
 
 </div>
 <script src="/socket.io/socket.io.min.js"></script>
 <script>
 
-    function load(){
-        let messages = document.getElementsByClassName('message');
-        messages[messages.length-1].scrollIntoView();
-    }
+    window.onload = scrollToBottom;
 
     const socket = io();
     let messageBox = document.getElementById('message-textbox');
@@ -118,17 +115,22 @@
         alert(message.text);
     });
 
+    function scrollToBottom(){
+        let messagesBox = document.getElementById('messages-box');
+        let scrollHeight = messagesBox.scrollHeight
+        messagesBox.scrollTop = scrollHeight;
+    }
+
     function sendMessage() {
-        let messageText = messageBox.value;
-        messageBox.value = '';
-        socket.emit('message', {
-            text: messageText,
+        let message = {
+            text: messageBox.value,
             timestamp: new Date().toISOString(),
             roomid: "<%= currentRoom?.id %>",
             senderid: "<%= user.id %>"
-        });
+        }
+        socket.emit('message', message);
 
-        window.location.reload();
+        addMessage
     }
 
     function addMessage(text, username, timestamp) {
