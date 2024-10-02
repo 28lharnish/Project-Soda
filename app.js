@@ -220,6 +220,8 @@ app.post('/register', async (req, res) => {
 
 app.post("/createroom", isAuthenticated, async (req, res) => {
 
+    const referer = req.get('Referer');
+
     let name = req.body?.roomName;
     let iconFile = req.files?.iconFile;
     let creator = req.session.user;
@@ -235,7 +237,8 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
     console.log(error);
 
     if(error){
-        res.redirect(`/?openmodal=createroom&modalerror=${error}`);
+        let redirectUrl = util.addParamsToURL(referer, {openmodal: "createRoom", modalerror: error});
+        res.redirect(redirectUrl);
         return;
     }
 
@@ -247,26 +250,38 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
 });
 
 app.post("/addmember", async (req, res) => {
+
+    const referer = req.get('Referer');
+    const refererUrl = new URL(referer);
+
     let roomid = req.body?.roomid;
     let username = req.body?.username;
 
     let room = await util.getRoomById(roomid);
+    let user = await util.getUserByUsername(username);
 
     console.log("ADDING MEMBER");
 
     if(!room) {
-        res.send("Room not found");
         console.log("Room not found");
+        // bad bad I hate it but it worky
+        res.redirect(`/?roomid=${roomid}&openmodal=roomMembers&modalerror=Room not found`);
+        return;
+    }
+
+    if(!user){
+        console.log("User not found");
+        res.redirect(`/?roomid=${roomid}&openmodal=roomMembers&modalerror=User not found`);
         return;
     }
 
     if(room.ownerid != req.session.user.id){
-        res.send("bruh");
         console.log("bruh");
+        res.send("bruh");
         return;
     }
 
-    util.addRoomMember(roomid, username).then(() => {
+    util.addRoomMember(roomid, user.id).then(() => {
         res.redirect(`/?roomid=${roomid}`);
     });
 });

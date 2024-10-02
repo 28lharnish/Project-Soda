@@ -139,7 +139,8 @@
     function addMessage(text, timestamp, senderid, senderUsername, senderPfpFilename) {
         let msgHtml = `<%- include('./message.ejs'); %>`;
         let isYou = senderid === "<%= user.id %>";
-        msgHtml = msgHtml.replace("PFPFILEPATH", senderPfpFilename).replace("SENDERUSERNAME", senderUsername).replace("MESSAGETEXT", text).replace("TIMESTAMP", timestamp);
+        //I hate this just as much as you do
+        msgHtml = msgHtml.replace("PFPFILEPATH", senderPfpFilename).replace("SENDERUSERNAME", senderUsername).replace("MESSAGETEXT", text).replace("TIMESTAMP", new Date(timestamp).toISOString());
         messagesContainer.innerHTML += msgHtml;
         scrollToBottom();
     }

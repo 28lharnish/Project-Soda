@@ -9,6 +9,20 @@ function generateToken() {
     return crypto.randomBytes(64).toString('hex');
 }
 
+function addParamsToURL(urlString, params){
+
+    let url = new URL(urlString);
+    let urlParams = url.searchParams;
+
+    for (const [key, value] of Object.entries(params)) {
+        if (!searchParams.has(key)) {
+            searchParams.append(key, value);
+        }
+    }
+
+    return url.toString();
+}
+
 async function setNewUserToken(id, token) {
     return new Promise(async (resolve, reject) => {
         await db.run("UPDATE users SET token = ? WHERE id = ?", [token, id], (err) => {
@@ -161,6 +175,7 @@ async function removeRoomMember(roomid, userid){
 }
 
 module.exports = {
+    addParamsToURL,
     getUserByUsername,
     getUserByID,
     getUserByToken,

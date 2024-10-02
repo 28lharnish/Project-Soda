@@ -94,17 +94,23 @@
         //I am so skibidi sus
 
         let modals = {
-            createRoom: `<%- include('./modals/createRoom.ejs') %>`,
-            roomMembers: `<%- include('./modals/roomMembers.ejs') %>`,
+            createroom: `<%- include('./modals/createRoom.ejs') %>`,
+            roommembers: `<%- include('./modals/roomMembers.ejs') %>`,
         };
 
         <% if (locals?.openModal) { %>
-            showModal(modals["<%- locals?.openModal %>"]);
+            showModal("<%- locals?.openModal %>");
         <% } %>
 
-        function showModal(modal) {
+
+        function showModal(modalName) {
+            let modal = modalName.toLowerCase();
+            console.log("attempting to show modal", modal);
             document.getElementById('modal-content').innerHTML = modals[modal];
             document.getElementById('modal').style.display = 'block';
+            if(modalName === "<%= locals?.openModal %>") {
+                document.querySelector(`#${modal} .modal-error`).innerText = "<%= locals?.modalError %>";
+            }
         }
 
         function hideModal() {
