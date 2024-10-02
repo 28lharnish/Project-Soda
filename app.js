@@ -262,6 +262,8 @@ app.post("/addmember", async (req, res) => {
 
     console.log("ADDING MEMBER");
 
+    let error;
+
     if(!room) {
         console.log("Room not found");
         // bad bad I hate it but it worky
@@ -270,9 +272,14 @@ app.post("/addmember", async (req, res) => {
     }
 
     if(!user){
+        let redirectUrl = util.addParamsToURL(referer, {openmodal: "createRoom", modalerror: error});
         console.log("User not found");
         res.redirect(`/?roomid=${roomid}&openmodal=roomMembers&modalerror=User not found`);
         return;
+    }
+
+    if(error){
+        //DO THIS
     }
 
     if(room.ownerid != req.session.user.id){
