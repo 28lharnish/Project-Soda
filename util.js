@@ -142,6 +142,15 @@ async function getRoomMembers(roomid){
     });
 }
 
+async function addRoomMember(roomid, userid){
+    return new Promise(async (resolve, reject) => {
+        db.run("INSERT INTO members (roomid, userid) VALUES (?, ?)", [roomid, userid], (err) => {
+            if (err) reject(err);
+            resolve();
+        });
+    });
+}
+
 module.exports = {
     getUserByUsername,
     getUserByID,
@@ -154,5 +163,6 @@ module.exports = {
     getRoomById,
     getRoomByName,
     getRoomMembers,
+    addRoomMember,
     generateToken
 }

@@ -244,4 +244,16 @@ app.post("/createroom", isAuthenticated, async (req, res) => {
 
 });
 
+app.post("/addmember", (req, res) => {
+    let roomid = req.body?.roomid;
+    let username = req.body?.username;
+
+    // add checking
+
+    util.addMemberToRoom(roomid, username).then(() => {
+        res.redirect(`/?roomid=${roomid}`);
+    });
+}
+));
+
 //  merry christmas you filthy animal - kevin mcallister 1990 - home alone 2 lost in new york - 1992 - john hughes - chris columbus - macaulay culkin - joe pesci - daniel stern - catherine o'hara - john heard - tim curry - rob schneider - brenda fricker - eddie bracken - dana ivey

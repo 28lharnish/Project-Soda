@@ -9,13 +9,24 @@
         height: 40px;
         border-radius: 50%;
     }
+
+    #room-members {
+    }
+
+    #add-member-form {
+        margin: 20px;
+    }
+
+    .kick-btn {
+        margin-left: 20px;
+    }
 </style>
 
 <div class="modal-box">
     <h2>Room Members</h2>
     <br>
-    <div id="roomMembers">
-        <table>
+    <div id="room-members">
+        <table id="room-members-table">
             <% currentRoom.members.forEach(member => { %>
                 <% member.isRoomOwner = (member.id === currentRoom.owner.id) %>
                 <tr>
@@ -28,12 +39,12 @@
                     <td>
                         <%- member.isRoomOwner ? "<p class='star'>&#9733</p>" : "" %>
                     </td>
-                    <% if (!member.isRoomOwner && member.id !== user.id) { %>
+                    <% if (/*!member.isRoomOwner && member.id !== user.id*/ true) { %>
                         <td>
                             <form action="/kick" method="post">
                                 <input type="hidden" name="roomid" value="<%= currentRoom.id %>">
                                 <input type="hidden" name="userid" value="<%= member.id %>">
-                                <button type="submit">Kick</button>
+                                <button type="submit" class="kick-btn">Kick</button>
                             </form>
                         </td>
                     <% } %>
@@ -41,4 +52,9 @@
             <% }) %>
         </table>
     </div>
+    <form action="/addmember" method="post" id="add-member-form">
+        <input type="hidden" name="roomid" value="<%= currentRoom.id %>">
+        <input type="text" name="username" placeholder="Username">
+        <button type="submit">Add Member</button>
+    </form>
 </div>
