@@ -73,7 +73,7 @@ io.on('connection', function (socket) {
 
     socket.on('message', async function (data) {
 
-        if(!data.text){
+        if(!data.text || data.text.length < config.messageRequirements.minLength || data.text.length > config.messageRequirements.maxLength){
             return
         }
 

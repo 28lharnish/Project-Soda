@@ -56,7 +56,14 @@ async function isRoomNameTaken(roomName) {
 }
 
 function isRoomNameValid(roomName) {
+
+    const regex = new RegExp(`^[${config.userRequirements.allowedUsernameChars}]+$`);
+
     if(!roomName){
+        return false;
+    }
+
+    if(!regex.test(roomName)){
         return false;
     }
 

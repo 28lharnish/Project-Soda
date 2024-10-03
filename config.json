@@ -7,6 +7,7 @@
     "userRequirements": {
         "minUsernameLength": 3,
         "maxUsernameLength": 30,
+        "allowedUsernameCharacters": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_()[]{}-=_+*^%$#@!~|:;\"'<>,.?/",
         "minPasswordLength": 3,
         "maxPasswordLength": 30,
         "maxPfpFileSize": 5000000,
@@ -15,6 +16,7 @@
     "roomRequirements": {
         "minRoomnameLength": 3,
         "maxRoomnameLength": 30,
+        "allowedRoomnameCharacters": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_()[]{}-=_+*^%$#@!~|:;\"'<>,.?/",
         "maxIconFileSize": 5000000,
         "allowedIconFileFormats": ["jpeg", "png", "webp", "jfif"]
     },
