@@ -1,4 +1,5 @@
 const config = require('./config.json');
+const path = require('path');
 const userRequirements = config.userRequirements;
 const util = require('./util');
 const sql = require('sqlite3').verbose();
@@ -37,10 +38,11 @@ async function createNewUser(userData) { // just put async everywhere until it w
             reject("Could not get last ID");
         }
 
-        let pfpFilename = pfpFile ? `${String(lastId + 1)}.${pfpFiletype}` : config.defaultPfp;
-
+        let pfpFilename = `${String(lastId + 1)}.${pfpFiletype}`;
+        let pfpFilepath = pfpFile ? path.join("./", config.pfpUploadPath, pfpFilename) : config.defaultPfp;
+        console.log(pfpFilepath);
         if(pfpFile){
-            await pfpFile.mv(`${__dirname + config.pfpUploadPath}/${pfpFilename}`);
+            await pfpFile.mv(pfpFilepath);
         }
 
         await hashPassword(userData.rawPass).then(hash => {
@@ -50,7 +52,7 @@ async function createNewUser(userData) { // just put async everywhere until it w
         let createUserSQL = `INSERT INTO users (username, password, pfpfilename, token) VALUES (?, ?, ?, ?);`;
         let userToken = util.generateToken();
 
-        await db.run(createUserSQL, [username, hashedPass, pfpFilename, userToken], async (err) => {
+        await db.run(createUserSQL, [username, hashedPass, pfpFilepath, userToken], async (err) => {
             if (err) reject(err);
             await util.getUserByUsername(username).then(user => {
                 resolve(user);

@@ -55,14 +55,14 @@
     }
 
     .message-pfp {
-        /*width: 40px;
+        width: 40px;
         height: 40px;
-        border-radius: 50%;*/
+        border-radius: 50%;
     }
 
-    .message-pfp[you] {
+    /*.message-pfp[you] {
         display: none;
-    }
+    }*/
 
     .message-timestamp[you] {
         display: none;
@@ -78,18 +78,18 @@
         <button id="people-btn" onclick="showModal('roomMembers')">Members</button>
 
         <div id="messages-box" onload="scrollToBottom()">
-            <% currentRoom.messages.reverse() %>
-            <% currentRoom.messages.forEach(message=> { %>
-                <% let msgHtml=include('./message.ejs') %>
-                <% let senderUsername=message.sender.username; %>
-                <% let pfpFilePath=message.sender.pfpfilename; %>
-                <% let messageText=message.text; %>
-                <% let timestamp=new Date(message.timestamp).toLocaleString(); %>
-                <% let isYou=message.sender.id===user.id; %>
-                <% // I know. I hate it too but there is no time to find a better way and I do not want to have it refresh everytime there is a new message%>
-                <% if(!isYou) msgHtml=msgHtml.replace("you", "" ); %>
-                <%- msgHtml.replace("PFPFILEPATH",pfpFilePath).replace("SENDERUSERNAME", isYou ? "You" :senderUsername).replace("MESSAGETEXT",messageText).replace("TIMESTAMP", timestamp); %>
-            <% }) %>
+        <% currentRoom.messages.reverse() %>
+        <% currentRoom.messages.forEach(message=> { %>
+            <% let msgHtml=include('./message.ejs') %>
+            <% let senderUsername=message.sender.username; %>
+            <% let pfpFilePath=message.sender.pfpfilename; %>
+            <% let messageText=message.text; %>
+            <% let timestamp=new Date(message.timestamp).toLocaleString(); %>
+            <% let isYou=message.sender.id===user.id; %>
+            <% // I know. I hate it too but there is no time to find a better way and Ido not want to have it refresh everytime there is a new message%>
+            <% if(!isYou) msgHtml=msgHtml.replace("you", "" ); %>
+            <%- msgHtml.replace("PFPFILEPATH",pfpFilePath.replaceAll('\\', '\\\\')).replace("SENDERUSERNAME",isYou ? "You":senderUsername).replace("MESSAGETEXT",messageText).replace("TIMESTAMP",timestamp); %>
+        <% }) %>
         </div>
 
         <div id="chat-ui">
@@ -97,7 +97,7 @@
             <textarea id="message-textbox" resizeable="false"
                 maxlength="<%= cfg.messageRequirements.maxMessageLength %>"
                 minlength="<%=cfg.messageRequirements.minMessageLength %>"></textarea>
-            <button id="send-btn" onclick="sendMessage()">Send</button>
+            <button id="send-btn" type="submit" onclick="sendMessage()">Send</button>
         </div>
 
         <script src="/socket.io/socket.io.min.js"></script>
@@ -110,8 +110,55 @@
             let messageBox = document.getElementById('message-textbox');
             let messagesContainer = document.getElementById('messages-box');
 
+            let sendPressed = false;
+
+            let downKeys = [];
+            //I don't even know
+            downKeys['shift'] = false;
+
+            document.addEventListener('keydown', function (e) {
+
+                let key = e.key.toLowerCase();
+                if(key === 'enter') e.preventDefault();
+                downKeys[key] = true;
+            });
+
+            document.addEventListener('keyup', function (e) {
+                let key = e.key.toLowerCase();
+                downKeys[key] = false;
+            });
+
+            function keyDown(key){
+                if(downKeys[key]){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            setInterval(function(){
+                if(document.activeElement !== messageBox){
+                    return;
+                }
+
+                if(!keyDown("enter")){
+                    sendPressed = false;
+                }
+
+                if(keyDown("enter") && keyDown("shift") && !sendPressed) {
+                    messageBox.value += "\n"
+                    console.log("NEW LINE");
+                    sendPressed = true;
+                } else if(keyDown("enter") && !sendPressed){
+                    sendMessage();
+                    console.log("SEND MESSAGE");
+                    sendPressed = true;
+                }
+
+            }, 16);
+
             socket.on('message', (message) => {
-                if(message.roomid == "<%= currentRoom.id %>") {
+                if (message.roomid == "<%= currentRoom.id %>") {
                     addMessage(message.text, message.timestamp, message.sender);
                 }
             });
@@ -129,6 +176,8 @@
                     senderid: "<%= user.id %>"
                 }
 
+                console.log(message.text)
+
                 messageBox.value = "";
 
                 socket.emit('message', message);
@@ -140,11 +189,11 @@
                 let convertedTimestamp = new Date(timestamp).toLocaleString();
                 //I hate this just as much as you do
                 if (!isYou) msgHtml = msgHtml.replace("you", "");
-                msgHtml = msgHtml.replace("PFPFILEPATH", sender.pfpfilename).replace("SENDERUSERNAME", isYou ? "You" : sender.username).replace("MESSAGETEXT", text).replace("TIMESTAMP", convertedTimestamp);
+                msgHtml = msgHtml.replace("PFPFILEPATH", sender.pfpfilename.replaceAll('\\', '\\\\')).replace("SENDERUSERNAME", isYou ? "You" : sender.username).replace("MESSAGETEXT", text.replaceAll("\n", "<br>")).replace("TIMESTAMP", convertedTimestamp);
                 messagesContainer.innerHTML += msgHtml;
                 scrollToBottom();
             }
-            
+
         </script>
 
         <% } %>

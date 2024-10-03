@@ -37,7 +37,7 @@ app.use(session({
 }));
 app.use(cookieParser())
 
-app.use('/public', express.static(__dirname + '/public'));
+app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 serv.listen(PORT);
@@ -72,6 +72,11 @@ io.on('connection', function (socket) {
     let ip = socket.handshake.address;
 
     socket.on('message', async function (data) {
+
+        if(!data.text){
+            return
+        }
+
         let members = await util.getRoomMembers(data.roomid);
 
         if(!members.find(m => m.id == data.senderid)){

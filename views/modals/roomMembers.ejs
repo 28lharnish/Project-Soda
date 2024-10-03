@@ -32,7 +32,7 @@
                 <% member.isRoomOwner = (member.id === currentRoom?.owner.id) %>
                 <tr>
                     <td>
-                        <img class='member-pfp' src="<%= member.pfpfilename %>">
+                        <img class='member-pfp' src="<%= member.pfpfilename.replaceAll('\\', '\\\\') %>">
                     </td>
                     <td>
                         <p><%= member.username %></p>
