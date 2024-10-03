@@ -5,6 +5,7 @@ const util = require('./util');
 const roomRequirements = config.roomRequirements;
 
 let db = new sql.Database('db/database.db');
+db.configure("busyTimeout", 10000); // Wait for 10 seconds before giving up
 
 
 async function createNewRoom(roomData) { // just put async everywhere until it works

@@ -25,6 +25,12 @@
         height: 50px;
         border-radius: 50%;
     }
+
+    .activity-notifier {
+        color: #CCC;
+        display: none;
+    }
+
 </style>
  
 <div id="ui">
@@ -36,7 +42,21 @@
         <p>You have no rooms</p>
     <% } else { %>
         <% rooms.forEach(room => { %>
-            <div class='room'><img class='room-icon' src='<%= room.iconfilename %>'><a class='room-link' href="/?roomid=<%= room.id %>"><%= room.name %></a></div>
+            <div class='room'>
+                <p class="activity-notifier" id="notifier-<%= room.id %>">NEW</p>
+                <img class='room-icon' src='<%= room.iconfilename %>'>
+                <a class='room-link' href="/?roomid=<%= room.id %>"><%= room.name %></a>
+            </div>
         <% }) %>
     <% } %>
 </div>
+
+<script>
+
+    socket.on('message', (message) => {
+        let activityNotifier = document.querySelector(`#notifier-${message.roomid}.activity-notifier`);
+        if(activityNotifier){
+            activityNotifier.style.display = 'block';
+        };
+    });
+</script>

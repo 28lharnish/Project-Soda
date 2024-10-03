@@ -3,6 +3,7 @@ const config = require('./config.json');
 const sql = require('sqlite3').verbose();
 const crypto = require('crypto');
 let db = new sql.Database('db/database.db');
+db.configure("busyTimeout", 10000); // Wait for 10 seconds before giving up
 
 
 function generateToken() {
@@ -33,6 +34,17 @@ async function setNewUserToken(id, token) {
             }
             resolve();
         })
+    });
+}
+
+async function getAllUsers(){
+    return new Promise(async (resolve, reject) => {
+        await db.all("SELECT * FROM users", (err, rows) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(rows);
+        });
     });
 }
 
@@ -178,6 +190,7 @@ async function removeRoomMember(roomid, userid){
 
 module.exports = {
     addParamsToURL,
+    getAllUsers,
     getUserByUsername,
     getUserByID,
     getUserByToken,

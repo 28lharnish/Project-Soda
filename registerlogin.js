@@ -6,6 +6,7 @@ const sql = require('sqlite3').verbose();
 const bcrypt = require('bcrypt');
 
 let db = new sql.Database('db/database.db');
+db.configure("busyTimeout", 10000); // Wait for 10 seconds before giving up
 
 function hashPassword(rawPass) {
     return new Promise((resolve, reject) => {

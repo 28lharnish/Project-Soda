@@ -100,13 +100,10 @@
             <button id="send-btn" type="submit" onclick="sendMessage()">Send</button>
         </div>
 
-        <script src="/socket.io/socket.io.min.js"></script>
-
         <script>
 
             window.onload = scrollToBottom;
 
-            const socket = io();
             let messageBox = document.getElementById('message-textbox');
             let messagesContainer = document.getElementById('messages-box');
 
@@ -160,6 +157,10 @@
             socket.on('message', (message) => {
                 if (message.roomid == "<%= currentRoom.id %>") {
                     addMessage(message.text, message.timestamp, message.sender);
+                    let activityNotifier = document.querySelector(`#notifier-${message.roomid}.activity-notifier`);
+                    if(activityNotifier){
+                        activityNotifier.style.display = 'none';
+                    }
                 }
             });
 
@@ -168,9 +169,16 @@
                 messagesContainer.scrollTop = scrollHeight;
             }
 
+            //Thank you Jimmy GPT
+            function sanitizeText(text) {
+                const element = document.createElement('div');
+                element.textContent = text; // This will escape special characters
+                return element.innerHTML;    // Get the HTML-escaped string
+            }
+
             function sendMessage() {
                 let message = {
-                    text: messageBox.value,
+                    text: sanitizeText(messageBox.value),
                     timestamp: new Date().toISOString(),
                     roomid: "<%= currentRoom?.id %>",
                     senderid: "<%= user.id %>"

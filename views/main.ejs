@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="/socket.io/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+    </script>
     <link rel="stylesheet" href="./public/css/style.css">
     <style>
         * {
@@ -109,7 +113,7 @@
             document.getElementById('modal-content').innerHTML = modals[modal];
             document.getElementById('modal').style.display = 'block';
             if(modalName === "<%= locals?.openModal %>") {
-                document.querySelector(`#${modal} .modal-error`).innerText = "<%= locals?.modalError %>";
+                document.querySelector(`#${modal}.modal-error`).innerText = "<%= locals?.modalError %>";
             }
         }
 

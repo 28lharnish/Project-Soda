@@ -43,7 +43,7 @@ app.use(fileUpload());
 serv.listen(PORT);
 
 let db = new sql.Database('db/database.db');
-
+db.configure("busyTimeout", 10000); // Wait for 10 seconds before giving up
 
 async function isAuthenticated(req, res, next){
 
@@ -116,7 +116,7 @@ app.get('/', isAuthenticated, async (req, res) => {
             res.send("You do not have access to this room, buddy");
             return;
         }
-
+        let users = await util.getAllUsers();
         let room = await util.getRoomById(req.query.roomid);
         let messages = await chat.getMessagesByRoomId(req.query.roomid);
         let owner = await util.getUserByID(room.ownerid);
@@ -132,6 +132,7 @@ app.get('/', isAuthenticated, async (req, res) => {
 
         res.render('main', {
             user: req.session.user, 
+            users: users,
             rooms: rooms,
             currentRoom: currentRoom,
             openModal: openModal,
@@ -153,7 +154,6 @@ app.get('/', isAuthenticated, async (req, res) => {
 });
 
 app.get('/funny', isAuthenticated, async (req, res) => {
-
     res.send('hehehe yup');
 });
 

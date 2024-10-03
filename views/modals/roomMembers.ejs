@@ -40,7 +40,7 @@
                     <td>
                         <%- member.isRoomOwner ? "<p class='star'>&#9733</p>" : "" %>
                     </td>
-                    <% if (!member.isRoomOwner && member.id !== user.id) { %>
+                    <% if (!member.isRoomOwner && member.id != user.id && user.id == currentRoom.owner.id) { %>
                         <td>
                             <form action="/kickmember" method="post">
                                 <input type="hidden" name="roomid" value="<%= currentRoom?.id %>">
@@ -56,7 +56,12 @@
     <% if(user.id == currentRoom?.owner.id) { %>
         <form action="/addmember" method="post" id="add-member-form">
             <input type="hidden" name="roomid" value="<%= currentRoom?.id %>">
-            <input type="text" name="username" placeholder="Username">
+            <!--<input type="text" name="username" placeholder="Username">-->
+            <select name="username">
+                <% users.forEach(user => { %>
+                    <option value="<%= user.username %>"><%= user.username %></option>
+                <% }); %>
+            </select>
             <p class="modal-error"></p>
             <button type="submit">Add Member</button>
         </form>

@@ -1,6 +1,7 @@
 const config = require('./config.json');
 const sql = require('sqlite3').verbose();
 let db = new sql.Database('db/database.db');
+db.configure("busyTimeout", 10000); // Wait for 10 seconds before giving up
 
 async function getMessagesByRoomId(roomid){
     return new Promise(async (resolve, reject) => {
