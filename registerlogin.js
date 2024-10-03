@@ -79,15 +79,17 @@ function isUsernameTaken(username) {
 
 function isUsernameValid(username) {
 
-    const regex = new RegExp(`^[${config.userRequirements.allowedUsernameChars}]+$`);
+    //const regex = new RegExp(`^[${config.userRequirements.allowedUsernameChars}]+$`);
 
     if (!username) {
         return false;
     }
 
-    if(!regex.test(username)){
+    //renable after pookie reviews
+
+    /*if(!regex.test(username)){
         return false;
-    }
+    }*/
 
     let rules = [username.length >= userRequirements.minUsernameLength, username.length <= userRequirements.maxUsernameLength, ];
 
