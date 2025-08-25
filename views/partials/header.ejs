@@ -1,18 +1,22 @@
-<style>
-    #headerContainer {
-    }
+<header id="headerContainer">
+    <script>
+        const bubbleFrequency = 75;
 
-    #soda {
-        width: fit-content;
-    }
+        setInterval(() => {
+            const newBubble = document.createElement('div');
+            newBubble.classList.add('bubble');
+            const newBubbleX = Math.floor(Math.random() * (window.innerWidth - 100));
+            const newBubbleOpacity = Math.floor(Math.random() * 100);
+            newBubble.style.setProperty('--bubble-x', `${newBubbleX}px`);
+            newBubble.style.setProperty('--bubble-start-y', `${Math.floor(Math.random() * 50) + 10}px`);
+            newBubble.style.setProperty('--bubble-opacity', `${newBubbleOpacity}%`);
 
-    #greeting {
-        width: fit-content;
-        float: right;
-    }
-</style>
-
-<div id="headerContainer">
-        <h1 id="soda">Project SODA!</h1>
-        <h3 id="greeting">Hello <%= user.username %></h3>
-</div>
+            document.getElementById('headerContainer').appendChild(newBubble);
+            setTimeout(() => {
+                newBubble.remove();
+            }, 2500);
+        }, bubbleFrequency);
+    </script>
+    <img src="../../public/img/Project Soda.png" alt="">
+    <h1 id="soda">Project SODA!</h1>
+</header>

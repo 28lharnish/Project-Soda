@@ -11,62 +11,7 @@
     </script>
     <link rel="stylesheet" href="./public/css/style.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            height: 100%;
-        }
-
-        #container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        #header-container {
-            background-color: var(--header-bg-color);
-            color: white;
-            padding: 0.5rem;
-            border: 1px solid rgba(0, 0, 0, 0.15);
-        }
-
-        #main-container {
-            display: flex;
-            flex: 1;
-        }
-
-        #chat-container {
-            flex: 1;
-            background-color: var(--chat-bg-color);
-            padding: 1rem;
-            overflow-y: auto;
-            box-shadow: -10px 0 15px rgba(40, 40, 40, 0.5);
-            border: 1px solid rgba(0, 0, 0, 0.25);
-        }
-
-        #sidebar-container {
-            width: 300px;
-            background-color: var(--rooms-bg-color);
-            padding: 1rem;
-            overflow-y: auto;
-            border: 1px solid rgba(0, 0, 0, 0.25);
-        }
-
-        .close-btn {
-            cursor: pointer;
-            position: absolute;
-            left: -0.1%;
-            /* I don't even know. I hate css */
-            top: -2%;
-            font-size: 30px;
-            padding: 10px;
-        }
-
-        /*among us sussy"*/
+        
     </style>
 </head>
 
@@ -86,8 +31,10 @@
         </div>
     </div>
 
-    <div id="modal" hidden>
-        <a class="close-btn" onclick="hideModal()">&times;</a>
+    <div id="backdropBlur"></div>
+
+    <div id="modal" style="display: block; opacity: 0; pointer-events: none;">
+        <button class="close-btn" onclick="hideModal()">&times;</button>
         <div id="modal-content"></div>
     </div>
 
@@ -112,6 +59,9 @@
             console.log("attempting to show modal", modal);
             document.getElementById('modal-content').innerHTML = modals[modal];
             document.getElementById('modal').style.display = 'block';
+            document.getElementById('modal').style.opacity = '1';
+            document.getElementById('backdropBlur').classList.add('open');
+            document.getElementById('modal').style.pointerEvents = 'all';
             if(modal === "<%= locals?.openModal %>".toLowerCase()) {
                 document.querySelector(`#${modal} .modal-error`).innerText = "<%= locals?.modalError %>";
             }
@@ -119,7 +69,9 @@
 
         function hideModal() {
             document.getElementById('modal-content').innerHTML = "";
-            document.getElementById('modal').style.display = 'none';
+            document.getElementById('backdropBlur').classList.remove('open');
+            document.getElementById('modal').style.opacity = '0';
+            document.getElementById('modal').style.pointerEvents = 'none';
         }
     </script>
 </body>

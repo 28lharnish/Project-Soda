@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
 :root {
     --header-bg-color: #111;
     --rooms-bg-color: #252525;
@@ -5,19 +7,163 @@
     --modal-bg-color: #555;
     --text-color: #fff;
     --btn-text-color: #fff;
-    --btn-bg-color: #0026ff;
-    --btn-bg-color-hover: #0926c9;
+    --btn-bg-color: #384cbd;
+    --btn-bg-color-hover: #647bfa;
 }
 
-h1 {
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Outfit", Helvetica, sans-serif;
+    color: white;
 }
+
+::placeholder {
+    font-style: italic;
+    color: #fff3;
+}
+
+input {
+    color: black;
+}
+
+body {
+    padding-top: 64px;
+    height: 100vh;
+    width: 100vw;
+    background: url(../img/Background.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 0% 100%;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#main-container {
+    display: flex;
+    flex: 1;
+}
+
+#chat-container {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    box-shadow: -10px 0 15px rgba(40, 40, 40, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-top: none;
+}
+
+#sidebar-container {
+    width: 300px;
+    background-color: var(--rooms-bg-color);
+    padding: 1rem;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+#chats {
+    padding: 10px;
+    background: #333;
+    border-radius: 10px;
+}
+
+.close-btn {
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    top: 0;
+    aspect-ratio: 1;
+    font-size: 40px;
+    padding: 0;
+    width: 40px;
+    overflow: hidden;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: none;
+    border: none;
+}
+
+.close-btn:hover {
+    background: none;
+    
+}
+
+/*among us sussy"*/
+
+header {
+    top: 0;
+    left: 0;
+    position: absolute;
+    height: 64px;
+    display: flex;
+    justify-content: baseline;
+    align-items: center;
+    padding: 0 20px;
+    width: calc(100% - 24px);
+    border-top: none;
+    border-left: none;
+    background: url(../img/Header.png), #200000;
+    background-size: contain;
+    background-repeat: repeat-x;
+    image-rendering: pixelated;
+    border-bottom-right-radius: 20px;
+    color: white;
+    overflow: hidden;
+
+    box-shadow: inset -10px -10px 50px #0000003d, 0px 0px 15px black;
+}
+
+header img {
+    z-index: 2;
+    height: 32px;
+    aspect-ratio: 1;
+}
+
+header > h1 {
+    color: white;
+    z-index: 2;
+}
+
+header > .bubble {
+    position: absolute;
+    left: var(--bubble-x);
+    width: 16px;
+    height: 16px;
+    background: url(../img/Bubble.png);
+    background-size: contain;
+    image-rendering: pixelated;
+    animation: bubbleAnim 2.5s infinite;
+}
+
+@keyframes bubbleAnim {
+    0% {
+        opacity: 0;
+        transform: translateY(var(--bubble-start-y));
+    }
+
+    25% {
+        opacity: var(--bubble-opacity);
+    }
+
+    100% {
+        transform: translateY(-50px);
+    }
+}
+
 
 button {
     color: var(--btn-text-color);
     background-color: var(--btn-bg-color);
-    border-radius: 10px;
-    border: none;
-    padding: 10px;
+    border: 2px solid #fff4;
+    border-radius: 5px;
+    padding: 10px 25px;
     transition: background-color 0.3s ease;
 }
 
@@ -31,11 +177,6 @@ button:active {
     transform: scale(0.97, 0.97);
 }
 
-input[type='text'] {
-    font-size: 1rem;
-    padding: 6px;
-}
-
 #modal {
     position: absolute;
     top: 50%;
@@ -46,10 +187,312 @@ input[type='text'] {
     width: fit-content;
     height: fit-content;
     padding: 10px;
-    background-color: var(--modal-bg-color);
+    background-color: #444;
     align-content: center;
     text-align: center;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 3px solid #fff3;
+    border-radius: 10px;
+    transition: 0.2s ease-in-out opacity;
+    z-index: 11;
+}
+
+#backdropBlur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(0px);
+    opacity: 0;
+    z-index: 10;
+    transition: 0.2s ease-in-out opacity, 0.2s ease-in-out backdrop-filter;
+    pointer-events: none;
+}
+
+#backdropBlur.open {
+    background: #000a;
+    backdrop-filter: blur(5px);
+    opacity: 1;
+    pointer-events: all;
+}
+
+#headerContainer {
+    background-color: black;
+}
+
+#soda {
+    width: fit-content;
+}
+
+#greeting {
+    width: fit-content;
+    float: right;
+}
+
+#ui {
+    margin-bottom: 20px;
+}
+
+
+.room {
+    display: flex;
+    align-items: center;
+    margin: 10px;
+}
+
+.room-link {
+    margin-left: 10px;
+    font-size: 1.25rem;
+    text-decoration: none;
+    color: white !important;
+}
+
+.room-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.activity-notifier {
+    color: #CCC;
+    display: none;
+}
+
+#chat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#messages-box {
+    background-color: var(--mo);
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#chat-ui {
+    width: 100%;
+    height: 100px;
+    background-color: #000a;
+    padding: 10px;
     border-radius: 10px;
 
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+#message-textbox {
+    background: #fff3;
+    border: none;
+    flex: 1 1 auto;
+    height: 100%;
+    padding: 20px;
+    resize: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#send-btn {
+    padding: 10px 60px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 30px;
+    height: 100%;
+}
+
+.message {
+    background-color: #3b3b3b;
+    border-left: 5px solid #bd4c38;
+    width: fit-content;
+    padding: 10px;
+    margin: 20px;
+    border-radius: 10px;
+    position: relative;
+    left: 10px;
+}
+
+.message[you] {
+    background-color: #000a;
+    border-left: none;
+    border-right: 5px solid #384cbd;
+    position: relative;
+    left: 90%;
+    transform: translateX(-90%);
+}
+
+.message-pfp {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+/*.message-pfp[you] {
+    display: none;
+}*/
+
+.message-timestamp[you] {
+    display: none;
+}
+
+#people-btn {
+    width: fit-content;
+}
+
+div.userLoginRegisterContainerOuter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+div.userLoginRegisterContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 50px;
+    background: #2a2a2a;
+    border: 5px solid #fff2;
+    border-radius: 20px;
+    aspect-ratio: 4/3;
+}
+
+
+div.userLoginRegisterContainer form #inputs,
+div.userLoginRegisterContainer form #pfpContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+div.userLoginRegisterContainer form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+div.userLoginRegisterContainer h1 {
+    font-size: 5rem;
+    font-weight: 900;
+    margin-bottom: 40px;
+}
+
+#rememberMeContainer {
+    margin-top: 20px;
+    display:flex;
+    flex-direction:row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+#rememberMeContainer p {
+    font-size: 0.9rem;
+}
+
+div.userLoginRegisterContainer form input:not([type="checkbox"]) {
+    height: 50px;
+    font-size: 1rem;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 3px solid #3a3a3a;
+    background: #111;
+    color: white;
+}
+
+div.userLoginRegisterContainer form input:last-of-type {
+    margin: 0;
+}
+div.userLoginRegisterContainer form div#userInfo {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+div.userLoginRegisterContainer form div#userInfo input:not([type="checkbox"]) {
+    width: 100%;
+}
+
+div.userLoginRegisterContainer form #pfpContainer img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    border: 2px solid #fff2;
+    object-fit: contain;
+}
+
+div.messageTopPart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+div.messageTopPart img {
+    margin-right: 20px;
+}
+
+div.message[you] .message-username {
+    color: #647bfa;
+    margin-bottom: 5px;
+}
+
+div.message i {
+    font-size: 0.75rem;
+    color: #fff6;    
+}
+
+div.messageTopPart div.text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+select {
+    cursor: pointer;
+    height: 50px;
+    font-size: 1rem;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 3px solid #333;
+    background: #111;
+    color: white;
+}
+
+option {
+    font-family: "Outfit", Helvetica, sans-serif;
+}
+
+input#roomNameBox {
+    height: 50px;
+    font-size: 1rem;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 3px solid #3a3a3a;
+    background: #111;
+    color: white;
 }
