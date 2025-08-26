@@ -17,9 +17,9 @@
             <% if(message.attachments) {
                     attachmentsNew = message.attachments.split(',');
                     let attachDivHTML = '<div class="attachments">';
-
+                    console.log(message.attachments)
                     for(attachment in attachmentsNew) {
-                        attachDivHTML += `<div class="attachment"><img src="${attachmentsNew[attachment]}"/></div>`
+                        attachDivHTML += `<div class="attachment" onclick="showAttachment(this.children[0])"><img onerror="this.src='/public/img/STEVEN.png'" src="${attachmentsNew[attachment]}"/></div>`
                     }
                     
                     msgHtml = msgHtml.replace('<div class="attach"></div>', attachDivHTML + '</div>');
@@ -49,13 +49,18 @@
             document.getElementById('uploadImageFiles').addEventListener("change", handleFiles, true);
 
             function handleFiles() {
-                socket.emit("upload", this.files[0], this.files[0].name, (status) => {
-                    if(status.attachmentUrl) {
-                        document.getElementById('attachment-holder').innerHTML += `<div class="attachment"><img src="${status.attachmentUrl}"></div>`;
-                        document.getElementById('attachment-holder').className = 'shown';
-                    }
-                    console.log(status);
-                });
+                for(file in this.files) {
+                    if(Array.from(document.getElementById('uploadImageFiles').files).indexOf(this.files[file])==-1) continue;
+                    if(getAllAttachments().length > 10) break; //limit to 10 files at a time
+                    socket.emit("upload", this.files[file], this.files[file].name, (status) => {
+                        if(status.attachmentUrl) {
+                            document.getElementById('attachment-holder').innerHTML += `<div class="attachment"  onclick="showAttachment(this.children[0])"><img onerror="this.src='/public/img/STEVEN.png'" src="${status.attachmentUrl}"></div>`;
+                            document.getElementById('attachment-holder').className = 'shown';
+                        }
+                        console.log(status);
+                    });
+                }
+                
             }
 
 
@@ -115,7 +120,7 @@
             socket.on('message', (message) => {
                 console.log(message.attachments)
                 if (message.roomid == "<%= currentRoom.id %>") {
-                    if(Notification.permission == 'granted') new Notification("New Message", { body: message.text, icon: message.sender.pfpfilename });
+                    if(Notification.permission == 'granted' && !document.hasFocus() && !message.isYou) new Notification("New Message", { body: message.text, icon: message.sender.pfpfilename });
                     addMessage(message.attachments, message.text, message.timestamp, message.sender);
                     let activityNotifier = document.querySelector(`#notifier-${message.roomid}.activity-notifier`);
                     if(activityNotifier){
@@ -140,7 +145,7 @@
                 let attachments = [];
                 let attachmentElements = document.querySelectorAll('#attachment-holder .attachment img');
                 attachmentElements.forEach(img => {
-                    attachments.push(img.src);
+                    attachments.push(img.getAttribute('src'));
                 });
                 return attachments;
             }
@@ -177,7 +182,7 @@
                     let attachDivHTML = '<div class="attachments">';
 
                     for(attachment in attachmentsNew) {
-                        attachDivHTML += `<div class="attachment"><img src="${attachmentsNew[attachment]}"/></div>`
+                        attachDivHTML += `<div class="attachment" onclick="showAttachment(this.children[0])"><img onerror="this.src='/public/img/STEVEN.png'" src="${attachmentsNew[attachment]}"/></div>`
                     }
                     
                     msgHtml = msgHtml.replace('<div class="attach"></div>', attachDivHTML + '</div>');
@@ -187,9 +192,26 @@
                 scrollToBottom();
             }
 
+            function showAttachment(a) {
+                document.getElementById('imageViewer').querySelector('img').src = a.src;
+                document.getElementById('imageViewer').querySelector('button.saveImage').setAttribute('onclick', `window.open("${a.src}");`);
+                document.getElementById('imageViewer').className = 'shown';
+
+                window.addEventListener('keydown', escapeCloser);
+            }
+
+            //  workaround because im genuinely lazy
+
+            function escapeCloser(e) {
+                if(e.key.toLowerCase() == 'escape') {
+                    document.getElementById('imageViewer').className = '';
+                    window.removeEventListener('keydown', escapeCloser);
+                }
+            }
+
         </script>
 
-        <% } %>
+    <% } %>
 
 
 </div>

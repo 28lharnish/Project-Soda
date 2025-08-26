@@ -75,10 +75,10 @@ io.on('connection', function (socket) {
 
     socket.on('message', async function (data) {
 
-        if((!data.text || data.text.length < config.messageRequirements.minLength || data.text.length > config.messageRequirements.maxLength) && !data.attachments){
+        if((!data.text || data.text.length < config.messageRequirements.minLength || data.text.length > config.messageRequirements.maxLength) && data.attachments == ''){
             return
         }
-
+        
         let members = await util.getRoomMembers(data.roomid);
 
         if(!members.find(m => m.id == data.senderid)){
@@ -106,7 +106,7 @@ io.on('connection', function (socket) {
         console.log(`Image Uploaded...\n\nFilename: ${filename},\nExtension: ${extension},\nAttachmentID: ${attachmentID}`);
 
         fs.writeFileSync(`./attachments/${attachmentID}.${extension}`, file, (err) => {});
-        callback({ attachmentUrl: `${url}/attachments/${attachmentID}.${extension}` });
+        callback({ attachmentUrl: `/attachments/${attachmentID}.${extension}` });
     });
 });
 
