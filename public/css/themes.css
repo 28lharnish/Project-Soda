@@ -1,0 +1,91 @@
+/* Coke */
+
+body.coke header#headerContainer {           background: url(../img/themes/coke/Header.png), #200000; }
+body.coke header#headerContainer > .bubble { background: url(../img/themes/coke/Bubble.png);            }
+body.coke div#sidebar-container { background: #3a1700; }
+body.coke { 
+    background-color: #3f1f0a;
+
+    --btn-bg-color: #8d4f25;
+    --message-from-you: var(--btn-bg-color);
+    --btn-bg-color-hover: #ac6b41;
+
+    --modal-bg-color: var(--btn-bg-color);
+    --modal-border-color: var(--btn-bg-color-hover);
+}
+
+/* Dr. Pepper */
+
+body.drp header#headerContainer {           background: url(../img/themes/drp/Header.png), #200000; }
+body.drp header#headerContainer > .bubble { background: url(../img/themes/drp/Bubble.png);            }
+body.drp div#sidebar-container { background: #2c0c00; }
+
+body.drp { 
+    background-color: #471400;
+    
+    --btn-bg-color: #583214;
+    --message-from-you: var(--btn-bg-color);
+    --btn-bg-color-hover: #976137;
+
+    --modal-bg-color: var(--btn-bg-color);
+    --modal-border-color: var(--btn-bg-color-hover);
+}
+
+/* Fanta */
+
+body.fanta header#headerContainer {           background: url(../img/themes/fanta/Header.png), #200000; }
+body.fanta header#headerContainer > .bubble { background: url(../img/themes/fanta/Bubble.png);            }
+body.fanta div#sidebar-container { background: #693011; }
+body.fanta { 
+    background-color: #471900;
+    
+    --btn-bg-color: #8f3200;
+    --message-from-you: var(--btn-bg-color);
+    --btn-bg-color-hover: #c0744b;
+
+    --modal-bg-color: var(--btn-bg-color);
+    --modal-border-color: var(--btn-bg-color-hover);
+}
+
+/* Mtn. Dew */
+
+body.mtn header#headerContainer {           background: url(../img/themes/mtn/Header.png), #200000; }
+body.mtn header#headerContainer > .bubble { background: url(../img/themes/mtn/Bubble.png);            }
+body.mtn div#sidebar-container { background: #216501; }
+body.mtn { 
+    background-color: #3a761e;
+    
+
+    --btn-bg-color: #3b7a1e;
+    --message-from-you: var(--btn-bg-color);
+    --btn-bg-color-hover: #6baa4d;
+
+    --modal-bg-color: var(--btn-bg-color);
+    --modal-border-color: var(--btn-bg-color-hover);
+}
+
+/* Sprite */
+
+body.sprite header#headerContainer {           background: url(../img/themes/sprite/Header.png), #200000; }
+body.sprite header#headerContainer > .bubble { background: url(../img/themes/sprite/Bubble.png);            }
+body.sprite div#sidebar-container { background: #4f5d49; }
+body.sprite { 
+    background-color: #63745c;
+    
+
+    --btn-bg-color: #65775e;
+    --btn-bg-color-hover: #a1b997;
+}
+
+body.coke,
+body.drp,
+body.fanta,
+body.mtn,
+body.sprite {
+    --message-from-you: var(--btn-bg-color);
+
+    --message-bg: color-mix(in srgb, var(--btn-bg-color), #0002 85%);
+
+    --modal-bg-color: color-mix(in srgb, var(--btn-bg-color), #000 20%);
+    --modal-border-color: color-mix(in srgb, var(--btn-bg-color-hover), #000 20%);
+}

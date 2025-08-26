@@ -1,6 +1,44 @@
 <header id="headerContainer">
+    <link rel="stylesheet" href="/public/css/themes.css">
+    <img src="../../public/img/Project Soda.png" alt="">
+    <h1 id="soda">Project SODA!</h1>
+
+    <select name="headerThemeSelector" id="headerThemeSelector" onchange="changeHeaderTheme(this)" autocomplete="off">
+        <option value="coke">Coke</option>
+        <option value="drp">Dr. Pepper</option>
+        <option value="fanta">Fanta</option>
+        <option value="mtn">Mountain Dew</option>
+        <option value="sprite">Sprite</option>
+    </select>
+
     <script>
+        function setCookie(cname, cvalue, exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            let expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+
+            // i love you w3schools
+        }
         const bubbleFrequency = 75;
+
+        let headerThemeSelector = document.getElementById('headerThemeSelector');
 
         setInterval(() => {
             const newBubble = document.createElement('div');
@@ -16,7 +54,23 @@
                 newBubble.remove();
             }, 2500);
         }, bubbleFrequency);
+
+        function changeHeaderTheme(theme, startup=false) {
+            setCookie('headerTheme', theme, 365);
+            document.body.className = theme;
+            const kids = Array.from(headerThemeSelector.children);
+            console.log(kids.indexOf(kids.find(opt => opt.value == theme)))
+            if(startup) headerThemeSelector.selectedIndex = kids.indexOf(kids.find(opt => opt.value == theme));
+        }
+
+        if(getCookie('headerTheme') !== "") {
+            changeHeaderTheme(getCookie('headerTheme'), true);
+        } else {
+            changeHeaderTheme('coke', true);
+        }
+
+        headerThemeSelector.addEventListener('change', (e) => {
+            changeHeaderTheme(e.target.value);
+        });
     </script>
-    <img src="../../public/img/Project Soda.png" alt="">
-    <h1 id="soda">Project SODA!</h1>
 </header>

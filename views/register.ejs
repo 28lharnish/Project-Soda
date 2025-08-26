@@ -32,10 +32,12 @@
                 </div>
                 <button type="submit">Go</button>
             </form>
+            <p class="error">
+                <% if(error) { %>
+                    <%= error %>
+                <% } %>
+            </p>
             <a href="/login">Login Instead</a>
-            <% if(error) { %>
-                <%= error %>
-            <% } %>
         </div>
     </div>
     <script src="/socket.io/socket.io.min.js"></script>

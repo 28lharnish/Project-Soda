@@ -9,6 +9,14 @@
     --btn-text-color: #fff;
     --btn-bg-color: #384cbd;
     --btn-bg-color-hover: #647bfa;
+
+
+    --message-bg: #3b3b3b;
+
+    --modal-bg-color: #444;
+    --modal-border-color: #fff3;
+
+    --message-from-you: #384cbd;
 }
 
 * {
@@ -32,7 +40,8 @@ body {
     padding-top: 64px;
     height: 100vh;
     width: 100vw;
-    background: url(../img/Background.png);
+    background-image: url(../img/Background.png);
+    background-blend-mode: overlay;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 0% 100%;
@@ -53,7 +62,6 @@ body {
     flex: 1;
     padding: 1rem;
     overflow-y: auto;
-    box-shadow: -10px 0 15px rgba(40, 40, 40, 0.5);
     border: 1px solid rgba(0, 0, 0, 0.25);
     border-top: none;
 }
@@ -64,11 +72,16 @@ body {
     padding: 1rem;
     overflow-y: auto;
     border: 1px solid rgba(0, 0, 0, 0.25);
+
+    resize: horizontal;
+
+    min-width: 200px;
+    max-width: 500px;
 }
 
 #chats {
     padding: 10px;
-    background: #333;
+    background: #0003;
     border-radius: 10px;
 }
 
@@ -109,7 +122,6 @@ header {
     width: calc(100% - 24px);
     border-top: none;
     border-left: none;
-    background: url(../img/Header.png), #200000;
     background-size: contain;
     background-repeat: repeat-x;
     image-rendering: pixelated;
@@ -118,6 +130,13 @@ header {
     overflow: hidden;
 
     box-shadow: inset -10px -10px 50px #0000003d, 0px 0px 15px black;
+}
+
+header select {
+    margin: 0;
+    margin-left: auto;
+    z-index: 2;
+    opacity: 0.75;
 }
 
 header img {
@@ -136,7 +155,6 @@ header > .bubble {
     left: var(--bubble-x);
     width: 16px;
     height: 16px;
-    background: url(../img/Bubble.png);
     background-size: contain;
     image-rendering: pixelated;
     animation: bubbleAnim 2.5s infinite;
@@ -187,10 +205,10 @@ button:active {
     width: fit-content;
     height: fit-content;
     padding: 10px;
-    background-color: #444;
+    background-color: var(--modal-bg-color);
     align-content: center;
     text-align: center;
-    border: 3px solid #fff3;
+    border: 3px solid var(--modal-border-color);
     border-radius: 10px;
     transition: 0.2s ease-in-out opacity;
     z-index: 11;
@@ -305,7 +323,7 @@ button:active {
 }
 
 .message {
-    background-color: #3b3b3b;
+    background-color: var(--message-bg);
     border-left: 5px solid #bd4c38;
     width: fit-content;
     padding: 10px;
@@ -318,7 +336,7 @@ button:active {
 .message[you] {
     background-color: #000a;
     border-left: none;
-    border-right: 5px solid #384cbd;
+    border-right: 5px solid var(--message-from-you);
     margin-left: auto;
 }
 
@@ -356,8 +374,8 @@ div.userLoginRegisterContainer {
     justify-content: center;
 
     padding: 50px;
-    background: #2a2a2a;
-    border: 5px solid #fff2;
+    background: var(--modal-bg-color);
+    border: 5px solid var(--modal-border-color);
     border-radius: 20px;
     aspect-ratio: 4/3;
 }
@@ -452,7 +470,7 @@ div.messageTopPart img {
 }
 
 div.message[you] .message-username {
-    color: #647bfa;
+    color: var(--message-from-you);
     margin-bottom: 5px;
 }
 
@@ -493,4 +511,12 @@ input#roomNameBox {
     border: 3px solid #3a3a3a;
     background: #111;
     color: white;
+}
+
+p.error {
+    color: #f00;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-style: italic;
+    text-shadow: 0px 0px 4px black;
 }

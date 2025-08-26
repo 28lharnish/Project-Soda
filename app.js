@@ -153,6 +153,10 @@ app.get('/', isAuthenticated, async (req, res) => {
     });
 });
 
+app.get('/test', async (req, res) => {
+    res.render('test')
+});
+
 app.get('/funny', isAuthenticated, async (req, res) => {
     res.send('hehehe yup');
 });

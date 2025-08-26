@@ -143,7 +143,7 @@ async function isRegisterDataValid(userData) {
 
     //I'm a dirty hypocrite
     if (usernameTaken) {
-        error = "Username is not available.";
+        error = "Username is already taken.";
     } else if (!isUsernameValid(userData.username)) {
         error = `Username must be at least ${userRequirements.minUsernameLength} characters long and less than ${userRequirements.maxUsernameLength} characters long.`;
     } else if (!isRawPasswordValid(userData.rawPass)) {
