@@ -319,9 +319,7 @@ button:active {
     background-color: #000a;
     border-left: none;
     border-right: 5px solid #384cbd;
-    position: relative;
-    left: 90%;
-    transform: translateX(-90%);
+    margin-left: auto;
 }
 
 .message-pfp {
