@@ -675,7 +675,9 @@ div#attachment-holder div.attachment img {
 #imageViewer img {
     max-width: 70vw;
     min-width: 128px;
+    
     max-height: 70vh;
+    min-height: 128px;
 }
 
 button.saveImage {
