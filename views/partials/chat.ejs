@@ -13,6 +13,18 @@
             <% let isYou=message.sender.id===user.id; %>
             <% // I know. I hate it too but there is no time to find a better way and Ido not want to have it refresh everytime there is a new message%>
             <% if(!isYou) msgHtml=msgHtml.replace("you", "" ); %>
+
+            <% if(message.attachments) {
+                    attachmentsNew = message.attachments.split(',');
+                    let attachDivHTML = '<div class="attachments">';
+
+                    for(attachment in attachmentsNew) {
+                        attachDivHTML += `<div class="attachment"><img src="${attachmentsNew[attachment]}"/></div>`
+                    }
+                    
+                    msgHtml = msgHtml.replace('<div class="attach"></div>', attachDivHTML + '</div>');
+            } %>
+
             <%- msgHtml.replace("PFPFILEPATH",pfpFilePath.replaceAll('\\', '\\\\')).replace("SENDERUSERNAME",isYou ? "You":senderUsername).replace("MESSAGETEXT",messageText).replace("TIMESTAMP",timestamp); %>
         <% }) %>
         </div>
@@ -101,10 +113,10 @@
             }, 16);
 
             socket.on('message', (message) => {
-                console.log(message)
+                console.log(message.attachments)
                 if (message.roomid == "<%= currentRoom.id %>") {
                     if(Notification.permission == 'granted') new Notification("New Message", { body: message.text, icon: message.sender.pfpfilename });
-                    addMessage(message.text, message.timestamp, message.sender);
+                    addMessage(message.attachments, message.text, message.timestamp, message.sender);
                     let activityNotifier = document.querySelector(`#notifier-${message.roomid}.activity-notifier`);
                     if(activityNotifier){
                         activityNotifier.style.display = 'none';
@@ -144,18 +156,33 @@
 
                 console.log(message.text)
 
+                document.getElementById('attachment-holder').className = '';
+                document.getElementById('attachment-holder').innerHTML = '';
                 messageBox.value = "";
 
                 socket.emit('message', message);
             }
 
-            function addMessage(text, timestamp, sender) {
+            function addMessage(attachments, text, timestamp, sender) {
                 let msgHtml = `<%- include('./message.ejs'); %>`;
                 let isYou = sender.id == "<%= user.id %>";
                 let convertedTimestamp = new Date(timestamp).toLocaleString();
                 //I hate this just as much as you do
                 if (!isYou) msgHtml = msgHtml.replace("you", "");
                 msgHtml = msgHtml.replace("PFPFILEPATH", sender.pfpfilename.replaceAll('\\', '\\\\')).replace("SENDERUSERNAME", isYou ? "You" : sender.username).replace("MESSAGETEXT", text.replaceAll("\n", "<br>")).replace("TIMESTAMP", convertedTimestamp);
+                
+                if(attachments) {
+                    console.log(attachments)
+                    attachmentsNew = attachments.split(',');
+                    let attachDivHTML = '<div class="attachments">';
+
+                    for(attachment in attachmentsNew) {
+                        attachDivHTML += `<div class="attachment"><img src="${attachmentsNew[attachment]}"/></div>`
+                    }
+                    
+                    msgHtml = msgHtml.replace('<div class="attach"></div>', attachDivHTML + '</div>');
+                }
+
                 messagesContainer.innerHTML += msgHtml;
                 scrollToBottom();
             }

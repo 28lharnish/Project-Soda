@@ -2,3 +2,4 @@
 /db/database.db
 /public/uploads/**/*
 !/public/uploads/**/
+/attachments/*
