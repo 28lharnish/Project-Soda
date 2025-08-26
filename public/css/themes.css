@@ -19,9 +19,8 @@ body.coke {
 body.drp header#headerContainer {           background: url(../img/themes/drp/Header.png), #130000; }
 body.drp header#headerContainer > .bubble { background: url(../img/themes/drp/Bubble.png);            }
 body.drp div#sidebar-container { background: #2c0c00; }
-
 body.drp { 
-    background-color: #471400;
+    background-color: #200200;
     
     --btn-bg-color: #583214;
     --message-from-you: var(--btn-bg-color);
@@ -33,7 +32,7 @@ body.drp {
 
 /* Fanta */
 
-body.fanta header#headerContainer {           background: url(../img/themes/fanta/Header.png), #270000; }
+body.fanta header#headerContainer {           background: url(../img/themes/fanta/Header.png), #270404; }
 body.fanta header#headerContainer > .bubble { background: url(../img/themes/fanta/Bubble.png);            }
 body.fanta div#sidebar-container { background: #693011; }
 body.fanta { 
@@ -70,8 +69,8 @@ body.sprite header#headerContainer {           background: url(../img/themes/spr
 body.sprite header#headerContainer > .bubble { background: url(../img/themes/sprite/Bubble.png);            }
 body.sprite div#sidebar-container { background: #4f5d49; }
 body.sprite { 
-    background-color: #63745c;
-    
+    background-color: #1d221a;
+
 
     --btn-bg-color: #65775e;
     --btn-bg-color-hover: #a1b997;
@@ -96,4 +95,12 @@ body.fanta header#headerContainer,
 body.mtn header#headerContainer,
 body.sprite header#headerContainer {
     background-repeat: repeat-x;
+}
+
+body.coke div.userLoginRegisterContainer form input:not([type="checkbox"]),
+body.drp div.userLoginRegisterContainer form input:not([type="checkbox"]),
+body.fanta div.userLoginRegisterContainer form input:not([type="checkbox"]),
+body.mtn div.userLoginRegisterContainer form input:not([type="checkbox"]),
+body.sprite div.userLoginRegisterContainer form input:not([type="checkbox"]) {
+    background: var(--btn-bg-color); border-color: var(--btn-bg-color-hover);
 }

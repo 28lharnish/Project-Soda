@@ -74,6 +74,10 @@
             document.getElementById('modal').style.opacity = '0';
             document.getElementById('modal').style.pointerEvents = 'none';
         }
+
+        Notification.requestPermission().then((result) => {
+            console.log(result);
+        });
     </script>
 </body>
 

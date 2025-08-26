@@ -18,14 +18,35 @@
         </div>
 
         <div id="chat-ui">
+
+            <div id="attachment-holder">
+            </div>
+
             <!-- long line moment-->
             <textarea id="message-textbox" resizeable="false"
                 maxlength="<%= cfg.messageRequirements.maxMessageLength %>"
                 minlength="<%=cfg.messageRequirements.minMessageLength %>"></textarea>
+            <button id="uploadImage" type="button" onclick="document.getElementById('uploadImageFiles').value='';document.getElementById('uploadImageFiles').click()">
+                <img src="/public/img/add-circle-outline.svg" alt="">
+            </button>
+            <input type="file" id="uploadImageFiles" accept="image/*, .gurt" hidden multiple>
             <button id="send-btn" type="submit" onclick="sendMessage()">Send</button>
         </div>
 
         <script>
+            document.getElementById('uploadImageFiles').addEventListener("change", handleFiles, true);
+
+            function handleFiles() {
+                socket.emit("upload", this.files[0], this.files[0].name, (status) => {
+                    if(status.attachmentUrl) {
+                        document.getElementById('attachment-holder').innerHTML += `<div class="attachment"><img src="${status.attachmentUrl}"></div>`;
+                        document.getElementById('attachment-holder').className = 'shown';
+                    }
+                    console.log(status);
+                });
+            }
+
+
 
             window.onload = scrollToBottom;
 
@@ -80,7 +101,9 @@
             }, 16);
 
             socket.on('message', (message) => {
+                console.log(message)
                 if (message.roomid == "<%= currentRoom.id %>") {
+                    if(Notification.permission == 'granted') new Notification("New Message", { body: message.text, icon: message.sender.pfpfilename });
                     addMessage(message.text, message.timestamp, message.sender);
                     let activityNotifier = document.querySelector(`#notifier-${message.roomid}.activity-notifier`);
                     if(activityNotifier){
@@ -101,8 +124,18 @@
                 return element.innerHTML;    // Get the HTML-escaped string
             }
 
+            function getAllAttachments() {
+                let attachments = [];
+                let attachmentElements = document.querySelectorAll('#attachment-holder .attachment img');
+                attachmentElements.forEach(img => {
+                    attachments.push(img.src);
+                });
+                return attachments;
+            }
+
             function sendMessage() {
                 let message = {
+                    attachments: getAllAttachments(),
                     text: sanitizeText(messageBox.value),
                     timestamp: new Date().toISOString(),
                     roomid: "<%= currentRoom?.id %>",

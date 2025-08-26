@@ -17,6 +17,8 @@ const util = require('./util');
 
 const PORT = 3000;
 
+const url = 'http://localhost:' + PORT;
+
 const config = require('./config.json');
 const { getUnpackedSettings } = require('http2');
 
@@ -73,7 +75,7 @@ io.on('connection', function (socket) {
 
     socket.on('message', async function (data) {
 
-        if(!data.text || data.text.length < config.messageRequirements.minLength || data.text.length > config.messageRequirements.maxLength){
+        if((!data.text || data.text.length < config.messageRequirements.minLength || data.text.length > config.messageRequirements.maxLength) && !data.attachments){
             return
         }
 
@@ -83,7 +85,7 @@ io.on('connection', function (socket) {
             return;
         }
 
-        chat.createNewMessage(data.text, data.timestamp, data.roomid, data.senderid).then(async message => {
+        chat.createNewMessage(data.attachments, data.text, data.timestamp, data.roomid, data.senderid).then(async message => {
             message.sender = await util.getUserByID(data.senderid);
             io.emit('message', message);
         });
@@ -92,10 +94,42 @@ io.on('connection', function (socket) {
     socket.on('disconnect', function () {
 
     });
+
+    socket.on('upload', function (file, filename, callback) {
+        let extension = filename.split('.').pop();
+        let attachmentID = generateImageID();
+
+        while(fs.existsSync(`./attachments/${attachmentID}.${extension}`)) {
+            attachmentID = generateImageID();
+        }
+
+        console.log(`Image Uploaded...\n\nFilename: ${filename},\nExtension: ${extension},\nAttachmentID: ${attachmentID}`);
+
+        fs.writeFileSync(`./attachments/${attachmentID}.${extension}`, file, (err) => {});
+        callback({ attachmentUrl: `${url}/attachments/${attachmentID}.${extension}` });
+    });
+});
+
+
+const imageIDLength = 12;
+function generateImageID() {
+    let imageID = "";
+    for(let i=0;i<imageIDLength;i++) {
+        imageID += Math.floor(Math.random() * 10);
+    }
+    return imageID
+}
+
+app.get('/attachments/:filename', (req, res) => {
+    if(fs.existsSync(path.join(__dirname, `/attachments/${req.params.filename}`))){
+        res.sendFile(path.join(__dirname, `/attachments/${req.params.filename}`));
+    } else {
+        res.status(404).send('File not found.');
+        return;
+    }
 });
 
 app.get('/', isAuthenticated, async (req, res) => {
-
     console.log(req.originalUrl);
 
     let ip = req.socket.remoteAddress;

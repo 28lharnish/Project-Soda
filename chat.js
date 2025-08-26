@@ -28,11 +28,11 @@ async function getLastMessageId(roomid){
     });
 }
 
-async function createNewMessage(text, timestamp, roomid, senderid){
+async function createNewMessage(attachments, text, timestamp, roomid, senderid){
     return new Promise((resolve, reject) => {
-        let createMessageSQL = `INSERT INTO messages (text, timestamp, roomid, senderid) VALUES (?, ?, ?, ?)`;
+        let createMessageSQL = `INSERT INTO messages (text, timestamp, roomid, senderid, attachments) VALUES (?, ?, ?, ?, ?)`;
         // bad code don't care just tryna get this done so I can go back to shapes that go
-        db.run(createMessageSQL, [text, timestamp, roomid, senderid], async (err) => {
+        db.run(createMessageSQL, [text, timestamp, roomid, senderid, attachments.join(',')], async (err) => {
             if(err) reject(err);
             let lastId = await getLastMessageId(roomid);
             db.get("SELECT * FROM messages WHERE id = ?", [lastId], (err, row) => {
