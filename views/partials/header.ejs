@@ -1,6 +1,6 @@
 <header id="headerContainer">
     <link rel="stylesheet" href="/public/css/themes.css">
-    <img src="../../public/img/Project Soda.png" alt="">
+    <img id="headerSodaIcon" src="/public/img/Project Soda.png" alt="">
     <h1 id="soda">Project SODA!</h1>
 
     <select name="headerThemeSelector" id="headerThemeSelector" onchange="changeHeaderTheme(this)" autocomplete="off">
@@ -57,6 +57,7 @@
 
         function changeHeaderTheme(theme, startup=false) {
             setCookie('headerTheme', theme, 365);
+            document.getElementById('headerSodaIcon').src = `/public/img/themes/${theme}/icon.png`;
             document.body.className = theme;
             const kids = Array.from(headerThemeSelector.children);
             console.log(kids.indexOf(kids.find(opt => opt.value == theme)))

@@ -4,16 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="../public/img/Project Soda.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/public/img/Project Soda.png" type="image/x-icon">
     <title>Project Soda</title>
     <script src="/socket.io/socket.io.min.js"></script>
     <script>
         const socket = io();
     </script>
-    <link rel="stylesheet" href="./public/css/style.css">
-    <style>
-        
-    </style>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -87,6 +85,8 @@
         Notification.requestPermission().then((result) => {
             console.log(result);
         });
+
+        twemoji.parse(document.body);
     </script>
 </body>
 

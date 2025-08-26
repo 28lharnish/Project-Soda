@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Project Soda</title>
-    <link rel="shortcut icon" href="../public/img/Project Soda.png" type="image/x-icon">
-    <link rel="stylesheet" href="./public/css/style.css">
+    <link rel="shortcut icon" href="/public/img/Project Soda.png" type="image/x-icon">
+    <link rel="stylesheet" href="/public/css/style.css">
 </head>
 <body>
     <%- include('./partials/header.ejs') %>
@@ -24,7 +24,7 @@
                         <input placeholder="Password" type="password" id="passwordBox" name="rawPass" value="<%= formData.rawPass %>">
                     </div>
                     <div id="pfpContainer">
-                        <img src="../public/img/NoPFP.png" alt="" id="pfpPreview">
+                        <img src="/public/img/NoPFP.png" alt="" id="pfpPreview">
                         <button type="button" onclick="document.getElementById('pfpBox').click()">Upload Profile Picture</button>
                     </div>
                     <input style="display: none;" type="file" id="pfpBox" accept=".png, .jpg, .jpeg, .jfif, .webp" name="pfpFile">
