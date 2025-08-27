@@ -121,7 +121,15 @@
 
             function deleteMessage(msg) {
                 console.log(`Attempting to delete message ${msg.dataset.messageId}`)
-                if (!msg.hasAttribute('you')) return console.log('Message not owned by user.')
+
+                socket.emit("deleteMessage", msg.dataset.messageId, <%= user.id %>, (response) => {
+                    if(response.error) return console.log("Failed to delete message: " + response.error);
+                    //if (response.success) {
+                    //    msg.remove();
+                    //} else {
+                    //    alert("Failed to delete message: " + response.error);
+                    //}
+                });
 
                 // do errors on server!!!!!!
             }

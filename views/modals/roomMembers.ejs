@@ -60,11 +60,14 @@
         <form action="/addmember" method="post" id="add-member-form">
             <input type="hidden" name="roomid" value="<%= currentRoom?.id %>">
             <!--<input type="text" name="username" placeholder="Username">-->
-            <select name="username">
+
+
+            <datalist id="peopleList">
                 <% users.forEach(user => { %>
-                    <option value="<%= user.username %>"><%= user.username %></option>
+                    <option value="<%= user.username %>">
                 <% }); %>
-            </select>
+            </datalist>
+            <input type="text" name="username" list="peopleList" autocomplete="off">
             <p class="modal-error"></p>
             <button type="submit">Add Member</button>
         </form>

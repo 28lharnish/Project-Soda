@@ -18,8 +18,11 @@
                     <p class="activity-notifier" id="notifier-<%= room.id %>">NEW</p>
                     <img class='room-icon' src='<%= room.iconfilename %>'>
                     <p class='room-link'><%= room.name %></p>
-                    
-                    <img class="<%= room.id === currentRoom.id ? "room-arrow active" : "room-arrow"%>" src="/public/img/caret-forward-outline.svg" alt="">
+                    <% if(locals.noRoom) { %>
+                        <img class="room-arrow" src="/public/img/caret-forward-outline.svg" alt="">
+                    <% } else { %>
+                        <img class="<%= room.id === currentRoom.id ? "room-arrow active" : "room-arrow"%>" src="/public/img/caret-forward-outline.svg" alt="">
+                    <% } %>
                 </a>
             <% }) %>
         <% } %>

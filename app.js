@@ -106,7 +106,7 @@ io.on('connection', function (socket) {
         }
 
         chat.createNewMessage(data.attachments, data.text, data.timestamp, data.roomid, data.senderid).then(async message => {
-            message.sender = await util.getUserByID(data.senderid);
+            message.sender = await util.getUserByID_NO_SENSITIVE_DATA(data.senderid);
             io.emit('message', message);
         });
     });
@@ -127,6 +127,12 @@ io.on('connection', function (socket) {
 
         fs.writeFileSync(`./attachments/${attachmentID}.${extension}`, file, (err) => {});
         callback({ attachmentUrl: `/attachments/${attachmentID}.${extension}` });
+    });
+
+    socket.on('deleteMessage', async function(messageId, userId, callback) {
+        let dbMessage = await util.getMessageById(messageId);
+        if(userId != dbMessage.senderid) return callback({ error: "Message not owned by user." });
+        callback({ result: dbMessage })
     });
 });
 
@@ -188,6 +194,7 @@ app.get('/', isAuthenticated, async (req, res) => {
             user: req.session.user, 
             users: users,
             rooms: rooms,
+            noRoom: false,
             currentRoom: currentRoom,
             openModal: openModal,
             modalError: modalError,
@@ -201,6 +208,7 @@ app.get('/', isAuthenticated, async (req, res) => {
     res.render('main', {
         user: req.session.user, 
         rooms: rooms,
+        noRoom: true,
         openModal: openModal,
         modalError: modalError,
         cfg: config

@@ -28,6 +28,15 @@ async function getLastMessageId(roomid){
     });
 }
 
+async function getLastMessageId(roomid){
+    return new Promise(async (resolve, reject) => {
+        await db.get("SELECT id FROM messages WHERE roomid = ? ORDER BY id DESC LIMIT 1", [roomid], (err, row) => {
+            if (err) reject(err);
+            resolve(row.id);
+        });
+    });
+}
+
 async function createNewMessage(attachments, text, timestamp, roomid, senderid){
     return new Promise((resolve, reject) => {
         let createMessageSQL = `INSERT INTO messages (text, timestamp, roomid, senderid, attachments) VALUES (?, ?, ?, ?, ?)`;

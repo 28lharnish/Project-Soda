@@ -87,6 +87,21 @@ async function getUserByID(id) {
     });
 }
 
+async function getUserByID_NO_SENSITIVE_DATA(id) {
+    return new Promise(async (resolve, reject) => {
+        await db.get("SELECT * FROM users WHERE id = ?", [id], (err, row) => {
+            if (err) {
+                reject(err);
+            }
+
+            user = row;
+            delete user.password;
+            delete user.token;
+            resolve(user);
+        })
+    });
+}
+
 async function getLastUserId() {
     return new Promise(async (resolve, reject) => {
         await db.get('SELECT MAX(id) AS lastId FROM users', (err, results) => {
@@ -143,6 +158,19 @@ async function getRoomById(id) {
     });
 }
 
+async function getMessageById(id) {
+    return new Promise(async (resolve, reject) => {
+        await db.get("SELECT * FROM messages WHERE id = ?", [id], (err, row) => {
+            if (err) {
+                reject(err);
+            }
+
+            room = row;
+            resolve(room);
+        })
+    });
+}
+
 async function getRoomByName(name) {
     return new Promise(async (resolve, reject) => {
         await db.get("SELECT * FROM rooms WHERE name = ?", [name], (err, row) => {
@@ -189,6 +217,7 @@ module.exports = {
     getAllUsers,
     getUserByUsername,
     getUserByID,
+    getUserByID_NO_SENSITIVE_DATA,
     getUserByToken,
     getLastUserId,
     setNewUserToken,
@@ -196,6 +225,7 @@ module.exports = {
     getUserRooms,
     getLastRoomId,
     getRoomById,
+    getMessageById,
     getRoomByName,
     getRoomMembers,
     addRoomMember,
