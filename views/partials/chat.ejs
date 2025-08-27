@@ -1,18 +1,20 @@
 <div id="chat">
     <% if (locals?.currentRoom) { %>
-        <button id="people-btn" onclick="showModal('roomMembers')">Members</button>
-
         <div id="messages-box" onload="scrollToBottom()">
         <% currentRoom.messages.reverse() %>
         <% currentRoom.messages.forEach(message=> { %>
             <% let msgHtml=include('./message.ejs') %>
             <% let senderUsername=message.sender.username; %>
+            <% let id=message.id; %>
             <% let pfpFilePath=message.sender.pfpfilename; %>
             <% let messageText=message.text; %>
             <% let timestamp=new Date(message.timestamp).toLocaleString(); %>
             <% let isYou=message.sender.id===user.id; %>
             <% // I know. I hate it too but there is no time to find a better way and Ido not want to have it refresh everytime there is a new message%>
-            <% if(!isYou) msgHtml=msgHtml.replace("you", "" ); %>
+            <% if(!isYou) { 
+                msgHtml=msgHtml.replace("you", "" );
+                msgHtml=msgHtml.replace('<button onclick="deleteMessage()">delete</button>','')
+            } %>
 
             <% if(message.attachments) {
                     attachmentsNew = message.attachments.split(',');
@@ -24,7 +26,7 @@
                     
                     msgHtml = msgHtml.replace('<div class="attach"></div>', attachDivHTML + '</div>');
             } %>
-
+            <% msgHtml = msgHtml.replace('SETMESSAGEID', id) %>
             <%- msgHtml.replace("PFPFILEPATH",pfpFilePath.replaceAll('\\', '\\\\')).replace("SENDERUSERNAME",isYou ? "You":senderUsername).replace("MESSAGETEXT",messageText).replace("TIMESTAMP",timestamp); %>
         <% }) %>
         </div>
@@ -117,11 +119,18 @@
 
             }, 16);
 
+            function deleteMessage(msg) {
+                console.log(`Attempting to delete message ${msg.dataset.messageId}`)
+                if (!msg.hasAttribute('you')) return console.log('Message not owned by user.')
+
+                // do errors on server!!!!!!
+            }
+
             socket.on('message', (message) => {
-                console.log(message.attachments)
+                console.log(message)
                 if (message.roomid == "<%= currentRoom.id %>") {
                     if(Notification.permission == 'granted' && !document.hasFocus() && !message.isYou) new Notification("New Message", { body: message.text, icon: message.sender.pfpfilename });
-                    addMessage(message.attachments, message.text, message.timestamp, message.sender);
+                    addMessage(message.attachments, message.text, message.timestamp, message.sender, message.id);
                     let activityNotifier = document.querySelector(`#notifier-${message.roomid}.activity-notifier`);
                     if(activityNotifier){
                         activityNotifier.style.display = 'none';
@@ -168,12 +177,16 @@
                 socket.emit('message', message);
             }
 
-            function addMessage(attachments, text, timestamp, sender) {
+            function addMessage(attachments, text, timestamp, sender, id) {
                 let msgHtml = `<%- include('./message.ejs'); %>`;
                 let isYou = sender.id == "<%= user.id %>";
                 let convertedTimestamp = new Date(timestamp).toLocaleString();
                 //I hate this just as much as you do
-                if (!isYou) msgHtml = msgHtml.replace("you", "");
+                if(!isYou) { 
+                    msgHtml=msgHtml.replace("you", "" );
+                    msgHtml=msgHtml.replace('<button onclick="deleteMessage()">delete</button>','')
+                }
+                msgHtml = msgHtml.replace("SETMESSAGEID", id);
                 msgHtml = msgHtml.replace("PFPFILEPATH", sender.pfpfilename.replaceAll('\\', '\\\\')).replace("SENDERUSERNAME", isYou ? "You" : sender.username).replace("MESSAGETEXT", text.replaceAll("\n", "<br>")).replace("TIMESTAMP", convertedTimestamp);
                 
                 if(attachments) {

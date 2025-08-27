@@ -2,7 +2,7 @@
 
 body.coke header#headerContainer {           background: url(../img/themes/coke/Header.png), #1f0000; }
 body.coke header#headerContainer > .bubble { background: url(../img/themes/coke/Bubble.png);            }
-body.coke div#sidebar-container { background: #3a1700; }
+body.coke div#sidebarInner { background: #3a1700; }
 body.coke { 
     background-color: #3f1f0a;
 
@@ -18,7 +18,7 @@ body.coke {
 
 body.drp header#headerContainer {           background: url(../img/themes/drp/Header.png), #130000; }
 body.drp header#headerContainer > .bubble { background: url(../img/themes/drp/Bubble.png);            }
-body.drp div#sidebar-container { background: #2c0c00; }
+body.drp div#sidebarInner { background: #2c0c00; }
 body.drp { 
     background-color: #200200;
     
@@ -34,7 +34,7 @@ body.drp {
 
 body.fanta header#headerContainer {           background: url(../img/themes/fanta/Header.png), #270404; }
 body.fanta header#headerContainer > .bubble { background: url(../img/themes/fanta/Bubble.png);            }
-body.fanta div#sidebar-container { background: #693011; }
+body.fanta div#sidebarInner { background: #693011; }
 body.fanta { 
     background-color: #471900;
     
@@ -50,7 +50,7 @@ body.fanta {
 
 body.mtn header#headerContainer {           background: url(../img/themes/mtn/Header.png), #141b01; }
 body.mtn header#headerContainer > .bubble { background: url(../img/themes/mtn/Bubble.png);            }
-body.mtn div#sidebar-container { background: #216501; }
+body.mtn div#sidebarInner { background: #216501; }
 body.mtn { 
     background-color: #3a761e;
     
@@ -67,7 +67,7 @@ body.mtn {
 
 body.sprite header#headerContainer {           background: url(../img/themes/sprite/Header.png), #2e382c; }
 body.sprite header#headerContainer > .bubble { background: url(../img/themes/sprite/Bubble.png);            }
-body.sprite div#sidebar-container { background: #4f5d49; }
+body.sprite div#sidebarInner { background: #4f5d49; }
 body.sprite { 
     background-color: #1d221a;
 

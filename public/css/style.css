@@ -72,28 +72,33 @@ body {
     flex: 1;
     padding: 1rem;
     overflow-y: auto;
-    border: 1px solid rgba(0, 0, 0, 0.25);
     padding-top: 0;
     border-top: none;
 }
 
 #sidebar-container {
     width: 300px;
-    background-color: var(--rooms-bg-color);
     padding: 1rem;
     overflow-y: auto;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-
+    backdrop-filter: blur(5px);
     resize: horizontal;
 
-    min-width: 200px;
+    min-width: 300px;
     max-width: 500px;
 }
 
 #chats {
-    padding: 10px;
+    padding: 5px;
     background: #0003;
     border-radius: 10px;
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
 }
 
 .close-btn {
@@ -141,7 +146,7 @@ header {
     overflow: hidden;
 
     box-shadow: inset -10px -10px 50px #0000003d, 0px 0px 15px black;
-    animation: 20s linear headerBackgroundAnim infinite, 1s ease-in-out headerBopAnim infinite;
+    animation: 20s linear headerBackgroundAnim infinite forwards, 1s ease-in-out headerBopAnim infinite forwards;
 }
 
 @keyframes headerBackgroundAnim {
@@ -285,26 +290,55 @@ button:active {
 
 #ui {
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
 }
 
 
 .room {
     display: flex;
     align-items: center;
-    margin: 10px;
+    margin: 5px;
+    padding: 10px;
+    text-decoration: none;
+    background: #0004; 
+    border-top-left-radius: 70px;
+    border-bottom-left-radius: 70px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.room:has(.room-arrow.active) {
+    border: 3px solid #88b6ff;
 }
 
 .room-link {
     margin-left: 10px;
     font-size: 1.25rem;
-    text-decoration: none;
+    flex: 1 1 auto;
     color: white !important;
 }
 
-.room-icon {
+.room-link:has(+ .room-arrow.active) {
+    color: #88b6ff !important;
+}
+
+.room-icon {  
+    min-width: 50px;
+    min-height: 50px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
+}
+
+.room-arrow {
+    height: 20px;
+    aspect-ratio: 1;
+}
+
+.room-arrow.active {
+    filter: invert(45%) sepia(43%) saturate(3630%) hue-rotate(202deg) brightness(103%) contrast(92%);
 }
 
 .activity-notifier {
@@ -393,11 +427,12 @@ button:active {
     display: none;
 }
 
-#people-btn {
-    z-index: 2;
-    width: fit-content;
-    position: absolute;
-    margin-top: 20px;
+#people-btn,
+#create-room-btn {
+    width: 100%;
+    text-wrap: nowrap;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 div.userLoginRegisterContainerOuter {
@@ -691,4 +726,12 @@ button.saveImage {
 
 button.saveImage:hover {
     filter: brightness(1.2);
+}
+
+#sidebarInner {
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    border-radius: 10px;
+    border: 3px solid #fff3;
 }

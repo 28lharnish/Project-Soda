@@ -3,22 +3,27 @@
 
 </style>
  
-<div id="ui">
-    <button id="create-room-btn" onclick="showModal('createRoom')">Create Room</button>
-</div>
+<div id="sidebarInner">
+    <div id="ui">
+        <button id="create-room-btn" onclick="showModal('createRoom')">Create Room</button>
+        <button id="people-btn" onclick="showModal('roomMembers')">Members</button>
+    </div>
 
-<div id="chats">
-    <% if (rooms.length === 0) { %>
-        <p>You have no rooms</p>
-    <% } else { %>
-        <% rooms.forEach(room => { %>
-            <div class='room'>
-                <p class="activity-notifier" id="notifier-<%= room.id %>">NEW</p>
-                <img class='room-icon' src='<%= room.iconfilename %>'>
-                <a class='room-link' href="/?roomid=<%= room.id %>"><%= room.name %></a>
-            </div>
-        <% }) %>
-    <% } %>
+    <div id="chats">
+        <% if (rooms.length === 0) { %>
+            <p>You have no rooms</p>
+        <% } else { %>
+            <% rooms.forEach(room => { %>
+                <a class='room' href="/?roomid=<%= room.id %>" data-room-id="<%= room.id %>">
+                    <p class="activity-notifier" id="notifier-<%= room.id %>">NEW</p>
+                    <img class='room-icon' src='<%= room.iconfilename %>'>
+                    <p class='room-link'><%= room.name %></p>
+                    
+                    <img class="<%= room.id === currentRoom.id ? "room-arrow active" : "room-arrow"%>" src="/public/img/caret-forward-outline.svg" alt="">
+                </a>
+            <% }) %>
+        <% } %>
+    </div>
 </div>
 
 <script>
