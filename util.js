@@ -87,10 +87,6 @@ async function getUserByID(id) {
     });
 }
 
-// Bryce and Matthew were here
-console.log("skibidi slicers in project soda code")
-console.log("use with statement btw")
-
 async function getLastUserId() {
     return new Promise(async (resolve, reject) => {
         await db.get('SELECT MAX(id) AS lastId FROM users', (err, results) => {

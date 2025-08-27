@@ -3,6 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const fileUpload = require('express-fileupload');
+const cfonts = require('cfonts');
 const app = express();
 const fs = require('fs')
 const sql = require('sqlite3').verbose();
@@ -39,10 +40,29 @@ app.use(session({
 }));
 app.use(cookieParser())
 
+const versionNumber = "1.1.0-dev";
+
 app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
-serv.listen(PORT);
+serv.listen(PORT, () => {
+    console.clear();
+    cfonts.say('Project Soda', {
+        font: 'simple3d',
+        align: 'center',
+        colors: ['candy', '#000'],
+    });
+    cfonts.say(`v${versionNumber}`, {
+        font: 'simple3d',
+        align: 'center',
+        colors: ['#f00', '#000'],
+    })
+    cfonts.say(`Port - ${PORT}`, {
+        font: 'grid',
+        align: 'center',
+        colors: ['#f00', '#000'],
+    })
+});
 
 let db = new sql.Database('db/database.db');
 db.configure("busyTimeout", 10000); // Wait for 10 seconds before giving up
